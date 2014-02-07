@@ -1,7 +1,11 @@
-@(message: String)
+@()
 
 @main("Welcome to Play") {
+<div ng-controller="SharedTxtCtrl">
+    <input type="text" ng-model="inputText" />
+    <button ng-click="sendData()">Send</button>
+</div>
 
-    @play20.welcome(message, style = "Java")
-
+<script src="@routes.Assets.at("bower_components/angular/angular.js")"></script>
+<script src="@routes.Assets.at("javascripts/controllers.js")"></script>
 }
