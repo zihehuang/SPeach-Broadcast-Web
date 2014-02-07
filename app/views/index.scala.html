@@ -2,6 +2,7 @@
 
 @main("Welcome to Play") {
 <div ng-controller="SharedTxtCtrl">
+	{{ receivedText }}
     <input type="text" ng-model="inputText" />
     <button ng-click="sendData()">Send</button>
 </div>
