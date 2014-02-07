@@ -3,12 +3,12 @@ var sharedTextApp = angular.module('sharedTextApp', []);
 sharedTextApp.controller('SharedTxtCtrl', function($scope, $http) {
 	
 	// Event Listeners
-	if (!!window.EventSource) {
-		var source = new EventSource('data/receive');
-	}
+    var source = new EventSource('data/get');
 
 	source.addEventListener('message', function(e) {
-		$scope.receivedText = e.data;
+	    $scope.$apply(function() {
+	        $scope.receivedText = e.data;
+	    });
 	}, false);
 
 	source.addEventListener('open', function(e) {
@@ -19,7 +19,14 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http) {
 
 	// scopes
     $scope.sendData = function() {
-        $http.post('data/receive', $scope.inputText);
+        $http({
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+            url: 'data/receive',
+            data: $scope.inputText
+        });
     };
 
 });

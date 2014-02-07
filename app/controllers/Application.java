@@ -15,20 +15,25 @@ public class Application extends Controller {
     }
 
     public static Result receiveData() {
-        DynamicForm data = Form.form().bindFromRequest();
+        Http.RequestBody body = request().body();
+        String textBody = body.asText();
+        if (null == textBody) {
+            textBody = "";
+        }
         SharedText ourText = SharedText.find.byId((long)1);
-        if (ourText != null) {
+        if (ourText == null) {
             SharedText.create();
         }
         ourText = SharedText.find.byId((long)1);
-        ourText.addToSharedText(data.toString());
+        ourText.addToSharedText(textBody);
 
         return ok();
     }
 
     public static Result getData() {
+        response().setContentType("text/event-stream");
         SharedText ourText = SharedText.find.byId((long)1);
-        if (ourText != null) {
+        if (ourText == null) {
             SharedText.create();
         }
         ourText = SharedText.find.byId((long)1);

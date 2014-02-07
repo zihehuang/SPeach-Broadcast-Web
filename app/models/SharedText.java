@@ -43,7 +43,7 @@ public class SharedText extends Model {
     }
 
     public String getSSESharedText() {
-        return "data: " + getSharedText() + "\n\n";
+        return "retry: 500\ndata: " + getSharedText() + "\n\n";
     }
 
     public void addToSharedText(String toAdd) {

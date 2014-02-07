@@ -10,8 +10,7 @@ object Build extends sbt.Build {
   val appDependencies = Seq(
     javaCore,
     javaJdbc,
-    javaEbean,
-    "org.atmosphere" % "atmosphere-play" % "1.2.0"
+    javaEbean
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
