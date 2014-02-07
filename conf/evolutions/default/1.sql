@@ -3,13 +3,13 @@
 
 # --- !Ups
 
-create table chatroom (
+create table shared_text (
   id                        bigint not null,
-  chat_log                  TEXT,
-  constraint pk_chatroom primary key (id))
+  shared_text               TEXT,
+  constraint pk_shared_text primary key (id))
 ;
 
-create sequence chatroom_seq;
+create sequence shared_text_seq;
 
 
 
@@ -18,9 +18,9 @@ create sequence chatroom_seq;
 
 SET REFERENTIAL_INTEGRITY FALSE;
 
-drop table if exists chatroom;
+drop table if exists shared_text;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
-drop sequence if exists chatroom_seq;
+drop sequence if exists shared_text_seq;
 
