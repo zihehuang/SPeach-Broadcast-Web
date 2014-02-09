@@ -3,10 +3,8 @@
 @main("Welcome to Play") {
 <div ng-controller="SharedTxtCtrl">
 	{{ receivedText }}
-    <input type="text" ng-model="inputText" />
-    <button ng-click="sendData()">Send</button>
-</div>
 
-<script src="@routes.Assets.at("bower_components/angular/angular.js")"></script>
-<script src="@routes.Assets.at("javascripts/controllers.js")"></script>
+    <a href="#" ng-repeat="user in editables" editable-text="user.name" onbeforesave="sendData($data)">{{ user.name || "empty" }}</a>
+
+</div>
 }

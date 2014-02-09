@@ -1,4 +1,8 @@
-var sharedTextApp = angular.module('sharedTextApp', []);
+var sharedTextApp = angular.module('sharedTextApp', ["xeditable"]);
+
+sharedTextApp.run(function(editableOptions) {
+  editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
+});
 
 sharedTextApp.controller('SharedTxtCtrl', function($scope, $http) {
 	
@@ -8,6 +12,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http) {
 	source.addEventListener('message', function(e) {
 	    $scope.$apply(function() {
 	        $scope.receivedText = e.data;
+	        //$scope.editables.push({name: e.data});
 	    });
 	}, false);
 
@@ -18,15 +23,20 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http) {
 	}, false);
 
 	// scopes
-    $scope.sendData = function() {
+    $scope.sendData = function(data) {
         $http({
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain',
             },
             url: 'data/receive',
-            data: $scope.inputText
+            data: data
         });
     };
+
+    $scope.editables = [
+    	{name: 'Edit Me'},
+    	{name: 'Edit Me too'}
+    ];
 
 });

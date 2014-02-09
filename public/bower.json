@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "dependencies": {
     "angular": "latest",
+    "bootstrap": "latest",
+    "angular-xeditable": "latest",
     "bootstrap": "latest"
   }
 }
