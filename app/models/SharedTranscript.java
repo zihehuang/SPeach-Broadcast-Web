@@ -11,23 +11,41 @@ import java.util.List;
  */
 @Entity
 public class SharedTranscript extends Model {
+
+    /**
+     * Id of the shared transcript in the database.
+     */
     @Id
     private long id;
 
+    /**
+     * The list of utterances in the shared transcript.
+     */
     @ManyToMany
-    private List<Utterance> sharedText = new ArrayList<Utterance>();
+    private List<Utterance> utteranceList = new ArrayList<Utterance>();
 
+    /**
+     * Finder for the SharedTranscript model.
+     */
     public static Finder<Long, SharedTranscript> find = new Finder<Long, SharedTranscript>(Long.class, SharedTranscript.class);
 
-    public SharedTranscript() {
-    }
-
+    /**
+     * Static method for encapsulating the creation and saving of a SharedTranscript.
+     * @return A new Shared Transcript that is saved in the database.
+     */
     public static SharedTranscript create() {
         SharedTranscript newText = new SharedTranscript();
         newText.save();
         return newText;
     }
 
+    /**
+     * Checks to see if a row exists in the shared transcript table.
+     *
+     * Method that will soon become legacy, because it operates on the assumption that there
+     * is only one row in the SharedTranscript table.
+     * @return Whether a row exists in the shared transcript table.
+     */
     public static boolean sharedTextExists() {
         if (find.all().size() == 0 ) {
             return false;
@@ -37,12 +55,20 @@ public class SharedTranscript extends Model {
         }
     }
 
-    public List<Utterance> getSharedText() {
-        return this.sharedText;
+    /**
+     * Gets the list of utterances in this shared transcript.
+     * @return The list of utterances.
+     */
+    public List<Utterance> getUtteranceList() {
+        return this.utteranceList;
     }
 
-    public String getSharedTextJSON() {
-        List<Utterance> sharedText = getSharedText();
+    /**
+     * Gets the JSON form of this SharedTranscript for client consumption.
+     * @return The JSON form of this SharedTranscript.
+     */
+    public String toJSON() {
+        List<Utterance> sharedText = getUtteranceList();
 
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -59,13 +85,21 @@ public class SharedTranscript extends Model {
         return sb.toString();
     }
 
-    public String getSSESharedText() {
-        return "retry: 500\ndata: " + getSharedTextJSON() + "\n\n";
+    /**
+     * Gets this SharedTranscript in SSE + JSON form for client consumption.
+     * @return Gets this SharedTranscript in SSE + JSON form for client consumption.
+     */
+    public String toSSEForm() {
+        return "retry: 500\ndata: " + toJSON() + "\n\n";
     }
 
-    public void addToSharedText(String toAdd) {
+    /**
+     * Adds new string to this SharedTranscript. Creates a new utterance in the database for this.
+     * @param toAdd The text to add to the shared transcript.
+     */
+    public void addToSharedTranscript(String toAdd) {
         Utterance addedUtterance = Utterance.create(toAdd);
-        this.sharedText.add(addedUtterance);
+        this.utteranceList.add(addedUtterance);
         this.save();
     }
 

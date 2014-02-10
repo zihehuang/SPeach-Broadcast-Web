@@ -20,7 +20,7 @@ public class Application extends Controller {
             SharedTranscript.create();
         }
         ourText = SharedTranscript.find.byId((long)1);
-        ourText.addToSharedText(textBody);
+        ourText.addToSharedTranscript(textBody);
 
         return ok();
     }
@@ -33,7 +33,7 @@ public class Application extends Controller {
         }
         ourText = SharedTranscript.find.byId((long)1);
 
-        return ok(ourText.getSSESharedText());
+        return ok(ourText.toSSEForm());
     }
 
     public static Result modifyOption() {
