@@ -5,7 +5,6 @@
 
 create table shared_text (
   id                        bigint not null,
-  shared_text               TEXT,
   constraint pk_shared_text primary key (id))
 ;
 
