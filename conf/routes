@@ -4,8 +4,11 @@
 
 # Home page
 GET     /                           controllers.Application.index()
-GET     /data/get                   controllers.Application.getData()
-POST    /data/receive               controllers.Application.receiveData()
+
+GET     /api/stream                 controllers.Application.getUtterances()
+POST    /api/add                    controllers.Application.addUtterance()
+POST    /api/modify                 controllers.Application.modifyOption()
+POST    /api/upvote                 controllers.Application.upvoteOption()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

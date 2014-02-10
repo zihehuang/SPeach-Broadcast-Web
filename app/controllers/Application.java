@@ -14,7 +14,7 @@ public class Application extends Controller {
         return ok(index.render());
     }
 
-    public static Result receiveData() {
+    public static Result addUtterance() {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
@@ -30,7 +30,7 @@ public class Application extends Controller {
         return ok();
     }
 
-    public static Result getData() {
+    public static Result getUtterances() {
         response().setContentType("text/event-stream");
         SharedText ourText = SharedText.find.byId((long)1);
         if (ourText == null) {
@@ -39,6 +39,14 @@ public class Application extends Controller {
         ourText = SharedText.find.byId((long)1);
 
         return ok(ourText.getSSESharedText());
+    }
+
+    public static Result modifyOption() {
+        return ok();
+    }
+
+    public static Result upvoteOption() {
+        return ok();
     }
 
 }
