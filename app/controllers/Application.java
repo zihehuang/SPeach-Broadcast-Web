@@ -1,17 +1,12 @@
 package controllers;
 
-import models.SharedText;
-import play.*;
-import play.data.DynamicForm;
-import play.data.Form;
+import models.SharedTranscript;
 import play.mvc.*;
-
-import views.html.*;
 
 public class Application extends Controller {
 
     public static Result index() {
-        return ok(index.render());
+        return ok(views.html.index.render());
     }
 
     public static Result addUtterance() {
@@ -20,11 +15,11 @@ public class Application extends Controller {
         if (null == textBody) {
             textBody = "";
         }
-        SharedText ourText = SharedText.find.byId((long)1);
+        SharedTranscript ourText = SharedTranscript.find.byId((long)1);
         if (ourText == null) {
-            SharedText.create();
+            SharedTranscript.create();
         }
-        ourText = SharedText.find.byId((long)1);
+        ourText = SharedTranscript.find.byId((long)1);
         ourText.addToSharedText(textBody);
 
         return ok();
@@ -32,11 +27,11 @@ public class Application extends Controller {
 
     public static Result getUtterances() {
         response().setContentType("text/event-stream");
-        SharedText ourText = SharedText.find.byId((long)1);
+        SharedTranscript ourText = SharedTranscript.find.byId((long)1);
         if (ourText == null) {
-            SharedText.create();
+            SharedTranscript.create();
         }
-        ourText = SharedText.find.byId((long)1);
+        ourText = SharedTranscript.find.byId((long)1);
 
         return ok(ourText.getSSESharedText());
     }
