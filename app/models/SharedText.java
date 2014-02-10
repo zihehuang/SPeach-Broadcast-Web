@@ -2,10 +2,9 @@ package models;
 
 import play.db.ebean.Model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that represents a shared transcript in the database.
@@ -15,13 +14,12 @@ public class SharedText extends Model {
     @Id
     private long id;
 
-    @Column(columnDefinition = "TEXT")
-    private ArrayList<String> sharedText;
+    @ManyToMany
+    private List<Utterance> sharedText = new ArrayList<Utterance>();
 
     public static Finder<Long, SharedText> find = new Finder<Long, SharedText>(Long.class, SharedText.class);
 
     public SharedText() {
-        this.sharedText = new ArrayList<String>();
     }
 
     public static SharedText create() {
@@ -39,25 +37,21 @@ public class SharedText extends Model {
         }
     }
 
-    public ArrayList<String> getSharedText() {
+    public List<Utterance> getSharedText() {
         return this.sharedText;
     }
 
     public String getSharedTextJSON() {
-        ArrayList<String> sharedText = getSharedText();
+        List<Utterance> sharedText = getSharedText();
 
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
         for (int i = 0; i < sharedText.size(); i++) {
-            sb.append("\"");
-            sb.append(sharedText.get(i));
+            sb.append(sharedText.get(i).toString());
             // if it is the last element, don't add a comma.
             if (i < sharedText.size() - 1) {
-                sb.append("\",");
-            }
-            else {
-                sb.append("\"");
+                sb.append(",");
             }
         }
         sb.append("]");
@@ -70,7 +64,8 @@ public class SharedText extends Model {
     }
 
     public void addToSharedText(String toAdd) {
-        this.sharedText.add(toAdd);
+        Utterance addedUtterance = Utterance.create(toAdd);
+        this.sharedText.add(addedUtterance);
         this.save();
     }
 
