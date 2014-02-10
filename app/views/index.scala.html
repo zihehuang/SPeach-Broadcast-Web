@@ -2,9 +2,17 @@
 
 @main("Welcome to Play") {
 <div ng-controller="SharedTxtCtrl">
+	<div>
+		<input type="text" ng-model="inputText" />
+      	<button ng-click="sendData()">Send</button>
+	</div>
+	<br>
+
 	{{ receivedText }}
 
-    <a href="#" ng-repeat="user in editables" editable-text="user.name" onbeforesave="sendData($data)">{{ user.name || "empty" }}</a>
+	<br><br>
+    <a href="#" ng-repeat="user in editables" editable-text="user.name">{{ user.name || "empty" }}</a>
+    <a href="#" editable-select="user.status" e-ng-options="s.value as s.text for s in statuses">{{ showStatus() }}</a>
 
 </div>
 }
