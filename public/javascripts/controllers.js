@@ -11,8 +11,11 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter) {
 
 	source.addEventListener('message', function(e) {
 	    $scope.$apply(function() {
-	        $scope.receivedText = e.data;
-	        //$scope.editables.push({name: e.data});
+	        //$scope.receivedText = e.data;
+            $scope.editables = [];
+            JSON.parse(e.data).forEach(function(text) {
+	           $scope.editables.push({name: text});
+            });
 	    });
 	}, false);
 
@@ -47,9 +50,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter) {
         });
     };
 
-    $scope.editables = [
-    	{name: 'Edit Me'}
-    ];
+    $scope.editables = [];
 
     $scope.user = {
         status: 2
