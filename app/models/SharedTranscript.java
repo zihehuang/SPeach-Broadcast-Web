@@ -90,7 +90,7 @@ public class SharedTranscript extends Model {
      * @return Gets this SharedTranscript in SSE + JSON form for client consumption.
      */
     public String toSSEForm() {
-        return "retry: 500\ndata: " + toJSON() + "\n\n";
+        return toJSON();
     }
 
     /**
@@ -101,6 +101,8 @@ public class SharedTranscript extends Model {
         Utterance addedUtterance = Utterance.create(toAdd);
         this.utteranceList.add(addedUtterance);
         this.save();
+
+        UpdateMessenger.singleton.tell("UPDATE", null);
     }
 
     /**
@@ -110,7 +112,21 @@ public class SharedTranscript extends Model {
      */
     public void modifySharedTranscript(int index, String newValue) {
         Utterance utteranceToChange = this.utteranceList.get(index);
-            utteranceToChange.change(newValue);
+        utteranceToChange.change(newValue);
+
+        UpdateMessenger.singleton.tell("UPDATE", null);
+    }
+
+    /**
+     * For our demo, creates the only shared transcript if it does not exist and returns it.
+     * @return The singular shared transcript in the database.
+     */
+    public static SharedTranscript getOnlySharedTranscript() {
+        SharedTranscript ourText = SharedTranscript.find.byId((long)1);
+        if (ourText == null) {
+            SharedTranscript.create();
+        }
+        return SharedTranscript.find.byId((long)1);
     }
 
 }

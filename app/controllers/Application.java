@@ -2,6 +2,8 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.SharedTranscript;
+import models.UpdateMessenger;
+import play.libs.EventSource;
 import play.mvc.*;
 
 public class Application extends Controller {
@@ -16,11 +18,7 @@ public class Application extends Controller {
         if (null == textBody) {
             textBody = "";
         }
-        SharedTranscript ourText = SharedTranscript.find.byId((long)1);
-        if (ourText == null) {
-            SharedTranscript.create();
-        }
-        ourText = SharedTranscript.find.byId((long)1);
+        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
         ourText.addToSharedTranscript(textBody);
 
         return ok();
@@ -28,13 +26,15 @@ public class Application extends Controller {
 
     public static Result getUtterances() {
         response().setContentType("text/event-stream");
-        SharedTranscript ourText = SharedTranscript.find.byId((long)1);
-        if (ourText == null) {
-            SharedTranscript.create();
-        }
-        ourText = SharedTranscript.find.byId((long)1);
+        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
 
-        return ok(ourText.toSSEForm());
+        return ok(new EventSource() {
+            @Override
+            public void onConnected() {
+                UpdateMessenger.singleton.tell(this, null);
+            }
+        });
+//        return ok(ourText.toSSEForm());
     }
 
     public static Result modifyOption() {
@@ -44,11 +44,7 @@ public class Application extends Controller {
         int index = jsonNode.get(0).asInt();
         String newValue = jsonNode.get(1).asText();
 
-        SharedTranscript ourText = SharedTranscript.find.byId((long)1);
-        if (ourText == null) {
-            SharedTranscript.create();
-        }
-        ourText = SharedTranscript.find.byId((long)1);
+        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
 
         ourText.modifySharedTranscript(index, newValue);
 
