@@ -2,10 +2,10 @@
 
 @main("Welcome to Play") {
 <div ng-controller="SharedTxtCtrl">
-	<div>
-		<input type="text" ng-model="inputText" />
-      	<button ng-click="sendData()">Send</button>
-	</div>
+	<!--<div>-->
+		<!--<input type="text" ng-model="inputText" />-->
+      	<!--<button ng-click="sendData()">Send</button>-->
+	<!--</div>-->
 	<br>
 	<div style="padding-left:2cm;">
     <a href="#" ng-repeat="user in editables" editable-text="user.name" onbeforesave="sendDataFromEditables($index, $data)">{{ user.name + " " || "empty" }}</a>
