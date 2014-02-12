@@ -32,4 +32,9 @@ public class Utterance extends Model {
     public String toString() {
         return "\"" + this.text + "\"";
     }
+
+    public void change(String newValue) {
+        this.text = newValue;
+        this.save();
+    }
 }

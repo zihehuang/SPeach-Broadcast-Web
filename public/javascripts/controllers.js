@@ -61,7 +61,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
         $http({
             method: 'POST',
             headers: {
-                'Content-Type': 'text/plain',
+                'Content-Type': 'application/json',
             },
             url: 'api/modify',
             data: [index, text]

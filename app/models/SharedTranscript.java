@@ -103,4 +103,14 @@ public class SharedTranscript extends Model {
         this.save();
     }
 
+    /**
+     * Changes the value of the shared transcript at an index.
+     * @param index The index to change the transcript at.
+     * @param newValue The value to change to.
+     */
+    public void modifySharedTranscript(int index, String newValue) {
+        Utterance utteranceToChange = this.utteranceList.get(index);
+            utteranceToChange.change(newValue);
+    }
+
 }
