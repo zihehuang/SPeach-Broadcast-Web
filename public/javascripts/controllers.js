@@ -1,10 +1,26 @@
 var sharedTextApp = angular.module('sharedTextApp', ["xeditable"]);
 
 sharedTextApp.run(function(editableOptions) {
-  editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
+    editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
 });
 
-sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter) {
+sharedTextApp.factory('db', function() {
+    var items = [];
+    var modify = {};
+    modify.addItem = function(index, item) {
+        if (index > items.length - 1)
+            items.push({name: item});
+        else if (items[index].name != item)
+            items[index].name = item;
+        return 'added item';
+    };
+    modify.getItems = function() {
+        return items;
+    };
+    return modify;
+});
+
+sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
 	
 	// Event Listeners
     var source = new EventSource('api/stream');
@@ -12,9 +28,10 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter) {
 	source.addEventListener('message', function(e) {
 	    $scope.$apply(function() {
 	        //$scope.receivedText = e.data;
-            $scope.editables = [];
+            var index = 0;
             JSON.parse(e.data).forEach(function(text) {
-	           $scope.editables.push({name: text});
+                db.addItem(index, text);
+                index++;
             });
 	    });
 	}, false);
@@ -39,18 +56,19 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter) {
         $scope.inputText = ""
     };
 
-    $scope.sendDataFromEditables = function(data) {
+    
+    $scope.sendDataFromEditables = function(index, text) {
         $http({
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain',
             },
-            url: 'api/receive',
-            data: data
+            url: 'api/modify',
+            data: [index, text]
         });
     };
 
-    $scope.editables = [];
+    $scope.editables = db.getItems();
 
     $scope.user = {
         status: 2
