@@ -1,9 +1,11 @@
 var sharedTextApp = angular.module('sharedTextApp', ["xeditable"]);
 
+// Boot strapping CSS for xeditables
 sharedTextApp.run(function(editableOptions) {
     editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
 });
 
+// Object to keep track of all the utterances
 sharedTextApp.factory('db', function() {
     var items = [];
     var modify = {};
@@ -20,14 +22,15 @@ sharedTextApp.factory('db', function() {
     return modify;
 });
 
+// Controller
 sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
 	
 	// Event Listeners
     var source = new EventSource('api/stream');
 
+    // Update from Server's event
 	source.addEventListener('message', function(e) {
 	    $scope.$apply(function() {
-	        //$scope.receivedText = e.data;
             var index = 0;
 
             var dataJSON = JSON.parse(e.data);
@@ -45,7 +48,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
 	source.addEventListener('error', function(e) {
 	}, false);
 
-	// scopes
+	// Function for the input box to send data to server
     $scope.sendData = function() {
         $http({
             method: 'POST',
@@ -59,7 +62,8 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
         $scope.inputText = ""
     };
 
-    
+    // Function for the xeditables to send data to server
+    // Requires the index of text to edit and the updated text
     $scope.sendDataFromEditables = function(index, text) {
         $http({
             method: 'POST',
@@ -71,8 +75,11 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
         });
     };
 
+    // Array holding all the utterances
     $scope.editables = db.getItems();
 
+
+    // The rest is needed for select. This is here just for testing
     $scope.user = {
         status: 2
     }; 
