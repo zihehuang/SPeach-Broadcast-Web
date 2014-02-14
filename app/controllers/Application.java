@@ -3,8 +3,8 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.SharedTranscript;
 import models.UpdateMessenger;
-import play.libs.EventSource;
 import play.mvc.*;
+import playextension.EventSource;
 
 public class Application extends Controller {
 

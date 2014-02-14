@@ -1,5 +1,6 @@
 package models;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -74,7 +75,7 @@ public class SharedTranscript extends Model {
         sb.append("[");
 
         for (int i = 0; i < sharedText.size(); i++) {
-            sb.append(sharedText.get(i).toString());
+            sb.append(sharedText.get(i).toEscapedString());
             // if it is the last element, don't add a comma.
             if (i < sharedText.size() - 1) {
                 sb.append(",");

@@ -1,5 +1,6 @@
 package models;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import play.db.ebean.Model;
 
 import javax.persistence.Column;
@@ -31,6 +32,10 @@ public class Utterance extends Model {
 
     public String toString() {
         return "\"" + this.text + "\"";
+    }
+
+    public String toEscapedString() {
+        return "\"" + StringEscapeUtils.escapeEcmaScript(this.text) + "\"";
     }
 
     public void change(String newValue) {

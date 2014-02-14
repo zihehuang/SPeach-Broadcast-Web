@@ -30,11 +30,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
 	        //$scope.receivedText = e.data;
             var index = 0;
 
-            // replacing raw escaped data with what they should be.
-            var replaced = e.data.replace(/\\"/g, '\"');
-            replaced = replaced.replace(/\\'/g, '\'');
-
-            var dataJSON = JSON.parse(replaced);
+            var dataJSON = JSON.parse(e.data);
 
             dataJSON.forEach(function(text) {
                 db.addItem(index, text);
