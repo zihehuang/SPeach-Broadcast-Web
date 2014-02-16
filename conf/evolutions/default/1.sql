@@ -3,6 +3,13 @@
 
 # --- !Ups
 
+create table option (
+  id                        bigint not null,
+  text                      varchar(255),
+  parent_id                 bigint,
+  constraint pk_option primary key (id))
+;
+
 create table shared_transcript (
   id                        bigint not null,
   constraint pk_shared_transcript primary key (id))
@@ -20,10 +27,14 @@ create table shared_transcript_utterance (
   utterance_id                   bigint not null,
   constraint pk_shared_transcript_utterance primary key (shared_transcript_id, utterance_id))
 ;
+create sequence option_seq;
+
 create sequence shared_transcript_seq;
 
 create sequence utterance_seq;
 
+alter table option add constraint fk_option_parent_1 foreign key (parent_id) references utterance (id) on delete restrict on update restrict;
+create index ix_option_parent_1 on option (parent_id);
 
 
 
@@ -35,6 +46,8 @@ alter table shared_transcript_utterance add constraint fk_shared_transcript_utte
 
 SET REFERENTIAL_INTEGRITY FALSE;
 
+drop table if exists option;
+
 drop table if exists shared_transcript;
 
 drop table if exists shared_transcript_utterance;
@@ -42,6 +55,8 @@ drop table if exists shared_transcript_utterance;
 drop table if exists utterance;
 
 SET REFERENTIAL_INTEGRITY TRUE;
+
+drop sequence if exists option_seq;
 
 drop sequence if exists shared_transcript_seq;
 
