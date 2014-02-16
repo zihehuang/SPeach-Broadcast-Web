@@ -1,6 +1,5 @@
 package models;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -131,7 +130,7 @@ public class SharedTranscript extends Model {
      */
     public void modifySharedTranscript(int index, String newValue) {
         Utterance utteranceToChange = this.utteranceList.get(index);
-        utteranceToChange.change(newValue);
+        utteranceToChange.changeText(newValue);
 
         UpdateMessenger.singleton.tell("UPDATE", null);
     }
