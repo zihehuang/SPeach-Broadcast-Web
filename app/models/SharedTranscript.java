@@ -69,22 +69,40 @@ public class SharedTranscript extends Model {
      * @return The JSON form of this SharedTranscript.
      */
     public String toJSON() {
-        List<Utterance> sharedText = getUtteranceList();
+        List<Utterance> utteranceList = this.getUtteranceList();
 
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        sb.append("{");
 
-        for (int i = 0; i < sharedText.size(); i++) {
-            sb.append(sharedText.get(i).toEscapedString());
-            // if it is the last element, don't add a comma.
-            if (i < sharedText.size() - 1) {
+        // go through each utterance and add it as an entry.
+        for (int i = 0; i < utteranceList.size(); i++) {
+            sb.append(utteranceList.get(i).toJSONEntry());
+            // if it is not the last element, add a comma.
+            if (i < utteranceList.size() - 1) {
                 sb.append(",");
             }
         }
-        sb.append("]");
+        sb.append("}");
 
         return sb.toString();
     }
+//    public String toJSON() {
+//        List<Utterance> sharedText = getUtteranceList();
+//
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("[");
+//
+//        for (int i = 0; i < sharedText.size(); i++) {
+//            sb.append(sharedText.get(i).toEscapedString());
+//            // if it is the last element, don't add a comma.
+//            if (i < sharedText.size() - 1) {
+//                sb.append(",");
+//            }
+//        }
+//        sb.append("]");
+//
+//        return sb.toString();
+//    }
 
     /**
      * Gets this SharedTranscript in SSE + JSON form for client consumption.

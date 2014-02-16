@@ -38,6 +38,14 @@ public class Utterance extends Model {
         return "\"" + StringEscapeUtils.escapeEcmaScript(this.text) + "\"";
     }
 
+    public String toJSONEntry() {
+        return "\""+this.id+"\":{\"upvotes\":"+getUpvotes()+",\"text\":"+this.toString()+"}";
+    }
+
+    public int getUpvotes() {
+        return 1;
+    }
+
     public void change(String newValue) {
         this.text = newValue;
         this.save();
