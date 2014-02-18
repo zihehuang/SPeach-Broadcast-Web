@@ -21,9 +21,12 @@ public class Option extends Model {
      * The text corresponding to the option.
      */
     private String text;
+    
+    private long numOfVotes;
 
     /**
      * The utterance that this option belongs to.
+     * can have multiple options to a parent.
      */
     @ManyToOne
     private Utterance parent;
@@ -37,10 +40,12 @@ public class Option extends Model {
      * Constructor for Option.
      * @param text Takes in default String.
      * @param parent The utterance that this option belongs to.
+     * @param numOfVotes default votes when an option is created.
      */
     public Option(String text, Utterance parent) {
         this.text = text;
         this.parent = parent;
+        this.numOfVotes = 0;
     }
 
     /**
@@ -52,5 +57,28 @@ public class Option extends Model {
         Option newOption = new Option(text, parent);
         newOption.save();
         return newOption;
+    }
+    
+    /**
+     * Getting vote counts
+     */
+    public long getVotes(){
+    	return this.numOfVotes;
+    }
+    
+    /**
+     * Adding the ability to save
+     */
+    public void edit(String toMe) {
+    	this.text = toMe;
+    	this.save();
+    }
+    
+    /**
+     * imcrement the vote count for this option
+     */
+    public void increment() {
+    	this.numOfVotes++;
+    	this.save();
     }
 }
