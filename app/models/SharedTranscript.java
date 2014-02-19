@@ -75,7 +75,7 @@ public class SharedTranscript extends Model {
 
         // go through each utterance and add it as an entry.
         for (int i = 0; i < utteranceList.size(); i++) {
-            sb.append(utteranceList.get(i).toJSONEntry());
+            sb.append(utteranceList.get(i).toString());
             // if it is not the last element, add a comma.
             if (i < utteranceList.size() - 1) {
                 sb.append(",");
@@ -125,12 +125,13 @@ public class SharedTranscript extends Model {
 
     /**
      * Changes the value of the shared transcript at an index.
-     * @param index The index to change the transcript at.
+     * @param utteranceId The id of the utterance that needs to be changed.
+     * @param optionId The id of the option that needs to be changed.
      * @param newValue The value to change to.
      */
-    public void modifySharedTranscript(int index, String newValue) {
-        Utterance utteranceToChange = this.utteranceList.get(index);
-        utteranceToChange.changeText(newValue);
+    public void modifySharedTranscript(int utteranceId, int optionId, String newValue) {
+        Utterance utteranceToChange = Utterance.find.byId((long) utteranceId);
+        utteranceToChange.changeText(optionId, newValue);
 
         UpdateMessenger.singleton.tell("UPDATE", null);
     }

@@ -37,12 +37,11 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
 
             for (var utteranceId in dataJSON) {
                 var utterance = dataJSON[utteranceId];
-                db.addItem(index++, utterance.text);
                 // add in this code for when we have options.
-//                for (var optionId in utterance) {
-//                    var option = utterance[optionId];
-//                    db.addItem(index++, option.text);
-//                }
+                for (var optionId in utterance) {
+                    var option = utterance[optionId];
+                    db.addItem(index++, option.text);
+                }
             }
 	    });
 	}, false);

@@ -53,4 +53,17 @@ public class Option extends Model {
         newOption.save();
         return newOption;
     }
+
+    /**
+     * Changes the value of the option.
+     * @param newText The value to replace the old with.
+     */
+    public void changeText(String newText) {
+        this.text = newText;
+        this.save();
+    }
+
+    public String toString() {
+        return "\""+this.id+"\":{\"upvotes\":"+1+",\"text\":\""+this.text+"\"}";
+    }
 }
