@@ -1,8 +1,11 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import models.Option;
 import models.SharedTranscript;
 import models.UpdateMessenger;
+import models.Vote;
 import play.mvc.*;
 import playextension.EventSource;
 
@@ -51,7 +54,21 @@ public class Application extends Controller {
         return ok();
     }
 
-    public static Result upvoteOption() {
+    public static Result upvoteOption(Long optionId) {
+    		String ip = request().remoteAddress();
+    		
+    		
+    		List<Vote> votesForIp = Vote.findByIP(ip);
+    		for (Vote vote : votesForIp) {
+    			if vote.getOption().getId() == optionId) {
+    				// person has already voted. stopit. return something.
+    			}
+    		}
+    		
+    		// if the person has not voted yet.
+    		Option optionToUpvote = Option.find.byId(optionId);
+    		optionToUpvote.addVote(ip)
+    		
         return ok();
     }
 

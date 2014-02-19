@@ -1,5 +1,8 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import play.db.ebean.Model;
 import play.db.ebean.Model.Finder;
 
@@ -30,7 +33,7 @@ public class Vote extends Model {
 	/**
    * Finder for votes, using the IP
    */
-  public static Finder<String, Vote> find = new Finder<String, Vote>(String.class, Vote.class);
+  public static Finder<Long, Vote> find = new Finder<Long, Vote>(Long.class, Vote.class);
   
   /**
    * Static helper for creating a vote and saving it in the database.
@@ -44,11 +47,34 @@ public class Vote extends Model {
   }
   
   /**
+   * Finding the votes from a given IP
+   * crawl through all votes in the database and find the ones voted by this IP
+   */
+  public static List<Vote> findByIP(String ipAddress) {
+  	List<Vote> votes = Vote.find.all();
+  	List<Vote> votesByIP = new ArrayList<Vote>();
+  	for(Vote vote: votes) {
+  		if(vote.getIP().equals(ipAddress)) {
+  			votesByIP.add(vote);
+  		}
+  	}
+  	return votesByIP;
+  }
+  
+  /**
    * change the Option a client wants to vote to
    */
   public void changeVote(Option newOption) {
   	this.parent = newOption;
   }
   
+  /**
+   * getter for ipAddress
+   */
+  public String getIP() {
+  	return this.ipAddress;
+  }
+  
+
 
 }
