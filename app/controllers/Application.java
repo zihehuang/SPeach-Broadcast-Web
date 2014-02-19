@@ -37,19 +37,19 @@ public class Application extends Controller {
                 UpdateMessenger.singleton.tell(this, null);
             }
         });
-//        return ok(ourText.toSSEForm());
     }
 
     public static Result modifyOption() {
         Http.RequestBody body = request().body();
         JsonNode jsonNode = body.asJson();
 
-        int index = jsonNode.get(0).asInt();
-        String newValue = jsonNode.get(1).asText();
+        int utteranceIndex = jsonNode.get(0).asInt();
+        int optionIndex = jsonNode.get(1).asInt();
+        String newValue = jsonNode.get(2).asText();
 
         SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
 
-        ourText.modifySharedTranscript(index, newValue);
+        ourText.modifySharedTranscript(utteranceIndex, optionIndex, newValue);
 
         return ok();
     }

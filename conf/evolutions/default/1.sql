@@ -17,7 +17,6 @@ create table shared_transcript (
 
 create table utterance (
   id                        bigint not null,
-  text                      TEXT,
   constraint pk_utterance primary key (id))
 ;
 
@@ -26,6 +25,12 @@ create table shared_transcript_utterance (
   shared_transcript_id           bigint not null,
   utterance_id                   bigint not null,
   constraint pk_shared_transcript_utterance primary key (shared_transcript_id, utterance_id))
+;
+
+create table utterance_option (
+  utterance_id                   bigint not null,
+  option_id                      bigint not null,
+  constraint pk_utterance_option primary key (utterance_id, option_id))
 ;
 create sequence option_seq;
 
@@ -42,6 +47,10 @@ alter table shared_transcript_utterance add constraint fk_shared_transcript_utte
 
 alter table shared_transcript_utterance add constraint fk_shared_transcript_utteranc_02 foreign key (utterance_id) references utterance (id) on delete restrict on update restrict;
 
+alter table utterance_option add constraint fk_utterance_option_utterance_01 foreign key (utterance_id) references utterance (id) on delete restrict on update restrict;
+
+alter table utterance_option add constraint fk_utterance_option_option_02 foreign key (option_id) references option (id) on delete restrict on update restrict;
+
 # --- !Downs
 
 SET REFERENTIAL_INTEGRITY FALSE;
@@ -53,6 +62,8 @@ drop table if exists shared_transcript;
 drop table if exists shared_transcript_utterance;
 
 drop table if exists utterance;
+
+drop table if exists utterance_option;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
