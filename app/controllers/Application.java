@@ -63,7 +63,7 @@ public class Application extends Controller {
      * @param optionId ID for an Option 
      * @return
      */
-    public static Result upvoteOption(long optionId, long utterId) {
+    public static Result upvoteOption(long optionId) {
     		String ip = request().remoteAddress();
     		
     		// find out all the votes the client has casted
