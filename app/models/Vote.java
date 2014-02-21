@@ -20,6 +20,8 @@ public class Vote extends Model {
 	
 	private String ipAddress;
 	
+	private boolean valid = true;
+	
 	/**
    * Constructor for Option.
    * @param text Takes in default String.
@@ -66,6 +68,16 @@ public class Vote extends Model {
    */
   public void changeVote(Option newOption) {
   	this.parent = newOption;
+  	this.save();
+  }
+  
+  /**
+   * setting the valid flag of this vote
+   * @param setToMe
+   */
+  public void setValid(boolean setToMe) {
+  	this.valid = setToMe;
+  	this.save();
   }
   
   /**
@@ -75,6 +87,16 @@ public class Vote extends Model {
   	return this.ipAddress;
   }
   
+  /**
+   * getting parent of this vote
+   */
+  public Option getOption() {
+  	return parent;
+  }
+  
+  public boolean getValid() {
+  	return this.valid;
+  }
 
 
 }

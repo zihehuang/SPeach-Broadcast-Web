@@ -59,11 +59,19 @@ public class Option extends Model {
         return newOption;
     }
     
+    public Utterance getUtter() {
+    	return parent;
+    }
+    
     /**
      * Getting vote counts
      */
     public long getVotes(){
     	return this.numOfVotes;
+    }
+    
+    public long getId() {
+    	return id;
     }
     
     /**
@@ -75,12 +83,13 @@ public class Option extends Model {
     }
     
     /**
-     * imcrement the vote count for this option
+     * increment the vote count for this option
      */
     public void increment() {
     	this.numOfVotes++;
     	this.save();
-
+    }
+    
     /**
      * Changes the value of the option.
      * @param newText The value to replace the old with.
@@ -89,7 +98,15 @@ public class Option extends Model {
         this.text = newText;
         this.save();
     }
-
+    
+    /**
+     * create a new vote
+     */
+    public void addVote(String ip){
+    	Vote.create(ip, this);
+    }
+    
+    
     public String toString() {
         return "\""+this.id+"\":{\"upvotes\":"+1+",\"text\":\""+this.text+"\"}";
     }
