@@ -72,19 +72,6 @@ public class Application extends Controller {
     		Option optionToUpvote = Option.find.byId(optionId);
     		Long utterOfOption = optionToUpvote.getUtter().getId();
     		
-    		/* for a client, there should only be one valid vote for each utterance
-    		 * check all valid votes casted by this client, 
-  		   *   if a vote is not pointed to this utterance, (this client has not voted on this utterance)
-  		   *	   add a new vote;
-  		   *   if the vote's option is pointed to this utterance, 
-  		   *     if the option id matches, but valid, (client has voted on this option)
-  		   * 		   return, no need to create vote
-  		   *     if the option id matches, but not valid, (client wish to roll back his vote)
-  		   *       
-  		   *     if the option id does not match, but valid, (well, this means that there's a conflict of votes)
-  		   *       marking this vote invalid
-  		   * 			 add a new vote; 
-    		 */
     		// gather all votes by this client for this utterance
     		// if zero votes, create a new vote, increment the option 
     		// else go through all votes, 
