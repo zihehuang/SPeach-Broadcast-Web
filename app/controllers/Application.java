@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -71,29 +72,58 @@ public class Application extends Controller {
     		Option optionToUpvote = Option.find.byId(optionId);
     		Long utterOfOption = optionToUpvote.getUtter().getId();
     		
-    		/*
+    		/* for a client, there should only be one valid vote for each utterance
     		 * check all valid votes casted by this client, 
-  		   *   if a vote is not pointed to this utterance,
-  		   *	 do nothing
+  		   *   if a vote is not pointed to this utterance, (this client has not voted on this utterance)
+  		   *	   add a new vote;
   		   *   if the vote's option is pointed to this utterance, 
-  		   *     if the option id matches,
-  		   * 		   do nothing
-  		   *     if the option id does not match, (well, this means that there's a conflict of votes)
+  		   *     if the option id matches, but valid, (client has voted on this option)
+  		   * 		   return, no need to create vote
+  		   *     if the option id matches, but not valid, (client wish to roll back his vote)
+  		   *       
+  		   *     if the option id does not match, but valid, (well, this means that there's a conflict of votes)
   		   *       marking this vote invalid
-  		   * create a new voted 
-  		   * increment the option vote count
+  		   * 			 add a new vote; 
     		 */
+    		// gather all votes by this client for this utterance
+    		// if zero votes, create a new vote, increment the option 
+    		// else go through all votes, 
+    		//   verify the optionId, 
+    		//    if success, make valid, done, return
+    		//		if fails, mark it invalid, decrement the associated option
+    		// verification complete, no valid votes for this utterance, create a new vote
+    		
+    		List<Vote> votesOfUtter = new ArrayList<Vote>();
     		for (Vote vote : votesForIp) {
-    			if (vote.getValid() == true) {
-    				if (vote.getOption().getUtter().getId() == utterOfOption) {
-    					if (vote.getOption().getId() != optionId) {
-    						vote.setValid(false);
-    					}
-    				}
+    			if (vote.getOption().getUtter().getId() == utterOfOption) {
+    				votesOfUtter.add(vote);
     			}
     		}
-    		// if the person has not voted yet.
-    		optionToUpvote.addVote(ip);
+    		// saved for debugging purpose
+    		/*if (votesOfUtter.size() == 0) {
+    			Vote.create(ip, optionToUpvote);
+    			optionToUpvote.increment();
+    			return ok();
+    		}else{*/
+    		if (votesOfUtter.size() != 0) {
+	    		for (Vote vote : votesOfUtter) {
+	    			if (vote.getOption().getId() == optionToUpvote.getId()) {
+	    				if (vote.getValid() == true) {
+	    					return ok(); // method ends here if verification complete
+	    				}else if (vote.getValid() == false) {
+	    					vote.setValid(true);
+	    					optionToUpvote.increment();
+	    				}
+	    			}else if (vote.getOption().getId() != optionToUpvote.getId()) {
+	    				vote.setValid(false);
+	    				vote.getOption().decrement();
+	    			}
+	    		}
+    		}
+    		// only reaches here when all votes are flagged invalid for this utterance
+    		// create a new vote
+    		Vote.create(ip, optionToUpvote);
+    		optionToUpvote.increment();
     		
         return ok();
     }

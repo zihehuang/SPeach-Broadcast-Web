@@ -90,6 +90,11 @@ public class Option extends Model {
     	this.save();
     }
     
+    public void decrement() {
+    	this.numOfVotes--;
+    	this.save();
+    }
+    
     /**
      * Changes the value of the option.
      * @param newText The value to replace the old with.
@@ -104,6 +109,7 @@ public class Option extends Model {
      */
     public void addVote(String ip){
     	Vote.create(ip, this);
+    	increment();
     }
     
     
