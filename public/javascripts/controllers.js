@@ -9,11 +9,14 @@ sharedTextApp.run(function(editableOptions) {
 sharedTextApp.factory('db', function() {
     var items = [];
     var modify = {};
-    modify.addItem = function(index, item) {
+    modify.addItem = function(index, utteranceIndex, optionIndex, item) {
         if (index > items.length - 1)
-            items.push({name: item});
-        else if (items[index].name != item)
+            items.push({name: item, utteranceIndex: utteranceIndex, optionIndex: optionIndex});
+        else if (items[index].name != item) {
             items[index].name = item;
+            items[index].utteranceIndex = utteranceIndex;
+            items[index].optionIndex = optionIndex;
+        }
         return 'added item';
     };
     modify.getItems = function() {
@@ -40,7 +43,8 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
                 // add in this code for when we have options.
                 for (var optionId in utterance) {
                     var option = utterance[optionId];
-                    db.addItem(index++, option.text);
+                    // add item to db with utteranceId and optionId
+                    db.addItem(index++, utteranceId, optionId, option.text);
                 }
             }
 	    });
@@ -69,13 +73,14 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
     // Function for the xeditables to send data to server
     // Requires the index of text to edit and the updated text
     $scope.sendDataFromEditables = function(index, text) {
+        var editable = $scope.editables[index];
         $http({
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             url: 'api/modify',
-            data: [index, text]
+            data: [editable.utteranceIndex, editable.optionIndex, text]
         });
     };
 
