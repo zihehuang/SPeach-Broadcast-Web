@@ -1,0 +1,10 @@
+@()
+
+@main("View Transcript") {
+<!-- Main text output area -->
+<div ng-controller="ViewTranscriptCtrl">
+    <ul class="list-unstyled">
+        <li ng-repeat="utterance in utterances">{{utterance.text}}</li>
+    </ul>
+</div>
+}

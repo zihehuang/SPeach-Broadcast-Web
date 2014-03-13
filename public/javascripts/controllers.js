@@ -105,3 +105,30 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
         return ($scope.user.status && selected.length) ? selected[0].text : 'Not set';
     };
 });
+
+sharedTextApp.controller('ViewTranscriptCtrl', function($scope) {
+    // Array with the utterances
+    $scope.utterances = []
+
+	// Event Listeners
+    var source = new EventSource('api/stream');
+
+    // Update from Server's event
+	source.addEventListener('message', function(e) {
+	    $scope.$apply(function() {
+            $scope.utterances = []
+
+            var dataJSON = JSON.parse(e.data);
+
+            for (var utteranceId in dataJSON) {
+                var utterance = dataJSON[utteranceId];
+                // add in this code for when we have options.
+                for (var optionId in utterance) {
+                    var option = utterance[optionId];
+                    // add item to db with utteranceId and optionId
+                    $scope.utterances.push(option);
+                }
+            }
+	    });
+	}, false);
+});

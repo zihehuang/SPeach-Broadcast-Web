@@ -13,7 +13,7 @@ public class Application extends Controller {
     }
 
     public static Result viewTranscript() {
-        return ok();
+        return ok(views.html.viewTranscript.render());
     }
 
     public static Result addUtterance() {
