@@ -5,6 +5,10 @@
 # Home page
 GET     /                           controllers.Application.index()
 
+# Read-only view page
+GET     /view                       controllers.Application.viewTranscript()
+
+# API routes
 GET     /api/stream                 controllers.Application.getUtterances()
 POST    /api/add                    controllers.Application.addUtterance()
 POST    /api/modify                 controllers.Application.modifyOption()

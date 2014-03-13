@@ -12,6 +12,10 @@ public class Application extends Controller {
         return ok(views.html.index.render());
     }
 
+    public static Result viewTranscript() {
+        return ok();
+    }
+
     public static Result addUtterance() {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
