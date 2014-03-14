@@ -1,8 +1,14 @@
 @()
 
-@main("View Transcript") {
+@main("Welcome to Play") {
+
 <!-- Main text output area -->
 <div ng-controller="SharedTxtViewCtrl">
-	{{ text }}
+	<!-- Box to send data to server -->
+
+	<!-- Text output area. Propagates using ng-repeat -->
+	<div style="padding-left:1cm; padding-top:1cm;">
+   		<textarea disabled="disabled" style="width:800px; min-height:300px; height:auto;" ng-model="transcript"></textarea>
+    </div>
 </div>
 }
