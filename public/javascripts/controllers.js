@@ -21,7 +21,7 @@ sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http) {
     }, false);
 
     $scope.text = "";
-}
+});
 
 // Object to keep track of all the utterances
 sharedTextApp.factory('db', function() {
@@ -108,11 +108,10 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, $sce,
     $scope.$watch('htmlcontent', function(newVal){
         console.log(newVal);
         db.store(newVal);
-        sendData2(newVal);
+        //$scope.sendData2(newVal);
     });
 
     // Initialization of variables
     $scope.htmlcontent = "";
 
 });
-
