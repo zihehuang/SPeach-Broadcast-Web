@@ -7,14 +7,12 @@ import play.Logger;
 import play.libs.Akka;
 import play.libs.F.Callback0;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.StringEscapeUtils;
-import play.mvc.Results.*;
+import playextension.EditorEventSource;
 import playextension.EventSource;
+import playextension.ViewerEventSource;
 
 /**
  * Actor that relays messages to the clients.
@@ -27,9 +25,9 @@ public class UpdateMessenger extends UntypedActor {
     public static ActorRef singleton = Akka.system().actorOf(Props.create(UpdateMessenger.class));
 
     /**
-     * List of connections.
+     * List of editor connections.
      */
-    private List<EventSource> sockets = new ArrayList<EventSource>();
+    private List<EventSource> editorSockets = new ArrayList<EventSource>();
 
     /**
      * The actions the messenger takes when it receives an update.
@@ -42,10 +40,10 @@ public class UpdateMessenger extends UntypedActor {
             final EventSource eventSource = (EventSource) message;
 
             // if there is a connection.
-            if (sockets.contains(eventSource)) {
+            if (editorSockets.contains(eventSource)) {
                 // conection needs to be removed.
-                sockets.remove(eventSource);
-                Logger.info("Browser disconnected (" + sockets.size() + " browsers currently connected)");
+                editorSockets.remove(eventSource);
+                Logger.info("Browser disconnected (" + editorSockets.size() + " browsers currently connected)");
             } else {
                 // connection needs to be added.
                 eventSource.onDisconnected(new Callback0() {
@@ -54,21 +52,28 @@ public class UpdateMessenger extends UntypedActor {
                         getContext().self().tell(eventSource, null);
                     }
                 });
-                sockets.add(eventSource);
+                editorSockets.add(eventSource);
 
-                SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-                eventSource.sendData(ourText.toSSEForm());
+//                SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+//                eventSource.sendData(ourText.toSSEForm());
 
-                Logger.info("New browser connected (" + sockets.size() + " browsers currently connected)");
+                Logger.info("New browser connected (" + editorSockets.size() + " browsers currently connected)");
             }
         }
         // if the actor needs to send out an update to connected clients, do so.
         if ("UPDATE".equals(message)) {
-            List<EventSource> shallowCopy = new ArrayList<EventSource>(sockets); //prevent ConcurrentModificationException
+            List<EventSource> shallowCopy = new ArrayList<EventSource>(editorSockets); //prevent ConcurrentModificationException
+
+            SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+            String textToAdd = ourText.getTextToAdd();
+
             for(EventSource es: shallowCopy) {
-                SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-                es.sendData(ourText.toSSEForm());
+                es.sendData(textToAdd);
             }
+
+            ourText.clearTextToAdd();
+
+            ViewerUpdateMessenger.singleton.tell("UPDATE", getSender());
         }
     }
 }

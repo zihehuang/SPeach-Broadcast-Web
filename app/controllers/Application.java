@@ -3,8 +3,11 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.SharedTranscript;
 import models.UpdateMessenger;
+import models.ViewerUpdateMessenger;
 import play.mvc.*;
+import playextension.EditorEventSource;
 import playextension.EventSource;
+import playextension.ViewerEventSource;
 
 public class Application extends Controller {
 
@@ -40,17 +43,30 @@ public class Application extends Controller {
         });
     }
 
+    public static Result getTranscriptData() {
+        return ok(new EventSource() {
+            @Override
+            public void onConnected() {
+                ViewerUpdateMessenger.singleton.tell(this, null);
+            }
+        });
+    }
+
     public static Result modifyOption() {
+//        Http.RequestBody body = request().body();
+//        JsonNode jsonNode = body.asJson();
+//
+//        int utteranceIndex = jsonNode.get(0).asInt();
+//        int optionIndex = jsonNode.get(1).asInt();
+//        String newValue = jsonNode.get(2).asText();
         Http.RequestBody body = request().body();
-        JsonNode jsonNode = body.asJson();
-
-        int utteranceIndex = jsonNode.get(0).asInt();
-        int optionIndex = jsonNode.get(1).asInt();
-        String newValue = jsonNode.get(2).asText();
-
+        String textBody = body.asText();
+        if (null == textBody) {
+            textBody = "";
+        }
         SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
 
-        ourText.modifySharedTranscript(utteranceIndex, optionIndex, newValue);
+        ourText.modifySharedTranscript(textBody);
 
         return ok();
     }

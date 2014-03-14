@@ -10,6 +10,7 @@ GET     /view                       controllers.Application.viewTranscript()
 
 # API routes
 GET     /api/stream                 controllers.Application.getUtterances()
+GET     /api/transcript             controllers.Application.getTranscriptData()
 POST    /api/add                    controllers.Application.addUtterance()
 POST    /api/modify                 controllers.Application.modifyOption()
 POST    /api/upvote                 controllers.Application.upvoteOption()

@@ -2,12 +2,12 @@ var sharedTextApp = angular.module('sharedTextApp', ['textAngular']);
 
 sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http) {
     // Event Listeners
-    var source = new EventSource('api/stream');
+    var source = new EventSource('api/transcript');
 
     // Update from Server's event
     source.addEventListener('message', function(e) {
         $scope.$apply(function() {
-             $scope.transcript = JSON.parse(e.data);
+             $scope.transcript = e.data;
         });
     }, false);
 
@@ -51,7 +51,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, $sce,
     // Update from Server's event
     source.addEventListener('message', function(e) {
         $scope.$apply(function() {
-            db.append(JSON.parse(e.data));
+            db.append(e.data);
             // var index = 0;
 
             // var dataJSON = JSON.parse(e.data);

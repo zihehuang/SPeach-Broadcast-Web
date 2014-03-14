@@ -21,13 +21,45 @@ public class SharedTranscript extends Model {
     /**
      * The list of utterances in the shared transcript.
      */
-    @ManyToMany
-    private List<Utterance> utteranceList = new ArrayList<Utterance>();
+    @Column(columnDefinition = "TEXT")
+    private String transcript;
+
+    /**
+     * The text that needs to be added to the transcript (from the speaker's phone).
+     */
+    @Column(columnDefinition = "TEXT")
+    private String toAdd;
 
     /**
      * Finder for the SharedTranscript model.
      */
     public static Finder<Long, SharedTranscript> find = new Finder<Long, SharedTranscript>(Long.class, SharedTranscript.class);
+
+    /**
+     * Gets the text to add to the transcript.
+     * @return
+     */
+    public String getTextToAdd() {
+        return toAdd;
+    }
+
+    /**
+     * Clears the text to add for this transcript.
+     */
+    public void clearTextToAdd() {
+        this.transcript += this.toAdd;
+        this.toAdd = "";
+        this.save();
+    }
+
+    /**
+     * Constructor for shared transcript.
+
+     */
+    public SharedTranscript() {
+        this.transcript = "";
+        this.toAdd = "";
+    }
 
     /**
      * Static method for encapsulating the creation and saving of a SharedTranscript.
@@ -59,8 +91,8 @@ public class SharedTranscript extends Model {
      * Gets the list of utterances in this shared transcript.
      * @return The list of utterances.
      */
-    public List<Utterance> getUtteranceList() {
-        return this.utteranceList;
+    public String getTranscript() {
+        return this.transcript;
     }
 
     /**
@@ -68,40 +100,25 @@ public class SharedTranscript extends Model {
      * @return The JSON form of this SharedTranscript.
      */
     public String toJSON() {
-        List<Utterance> utteranceList = this.getUtteranceList();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-
-        // go through each utterance and add it as an entry.
-        for (int i = 0; i < utteranceList.size(); i++) {
-            sb.append(utteranceList.get(i).toString());
-            // if it is not the last element, add a comma.
-            if (i < utteranceList.size() - 1) {
-                sb.append(",");
-            }
-        }
-        sb.append("}");
-
-        return sb.toString();
-    }
-//    public String toJSON() {
-//        List<Utterance> sharedText = getUtteranceList();
+//        List<Utterance> utteranceList = this.getTranscript();
 //
 //        StringBuilder sb = new StringBuilder();
-//        sb.append("[");
+//        sb.append("{");
 //
-//        for (int i = 0; i < sharedText.size(); i++) {
-//            sb.append(sharedText.get(i).toEscapedString());
-//            // if it is the last element, don't add a comma.
-//            if (i < sharedText.size() - 1) {
+//        // go through each utterance and add it as an entry.
+//        for (int i = 0; i < utteranceList.size(); i++) {
+//            sb.append(utteranceList.get(i).toString());
+//            // if it is not the last element, add a comma.
+//            if (i < utteranceList.size() - 1) {
 //                sb.append(",");
 //            }
 //        }
-//        sb.append("]");
-//
+//        sb.append("}");
+
 //        return sb.toString();
-//    }
+
+        return getTranscript();
+    }
 
     /**
      * Gets this SharedTranscript in SSE + JSON form for client consumption.
@@ -116,8 +133,10 @@ public class SharedTranscript extends Model {
      * @param toAdd The text to add to the shared transcript.
      */
     public void addToSharedTranscript(String toAdd) {
-        Utterance addedUtterance = Utterance.create(toAdd);
-        this.utteranceList.add(addedUtterance);
+//        Utterance addedUtterance = Utterance.create(toAdd);
+//        this.transcript.add(addedUtterance);
+//        this.save();
+        this.toAdd += toAdd + " ";
         this.save();
 
         UpdateMessenger.singleton.tell("UPDATE", null);
@@ -129,11 +148,13 @@ public class SharedTranscript extends Model {
      * @param optionId The id of the option that needs to be changed.
      * @param newValue The value to change to.
      */
-    public void modifySharedTranscript(int utteranceId, int optionId, String newValue) {
-        Utterance utteranceToChange = Utterance.find.byId((long) utteranceId);
-        utteranceToChange.changeText(optionId, newValue);
+    public void modifySharedTranscript(String newSharedTranscript) {
+//        Utterance utteranceToChange = Utterance.find.byId((long) utteranceId);
+//        utteranceToChange.changeText(optionId, newValue);
+        this.transcript = newSharedTranscript;
+        this.save();
 
-        UpdateMessenger.singleton.tell("UPDATE", null);
+        ViewerUpdateMessenger.singleton.tell("UPDATE", null);
     }
 
     /**
