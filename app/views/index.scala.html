@@ -2,12 +2,6 @@
 
 @main("Welcome to Play") {
 
-<!-- Override bootstrap styling -->
-<style>
-a:link { color: rgb(0, 0, 0); border-bottom: none; font-size: 20px; }
-a:hover { background-color:yellow; }
-</style>
-
 <!-- Main text output area -->
 <div ng-controller="SharedTxtCtrl">
 	<!-- Box to send data to server -->
@@ -16,11 +10,13 @@ a:hover { background-color:yellow; }
       	<button ng-click="sendData()">Send</button>
 	</div>
 	<br>
-
+	
 	<!-- Text output area. Propagates using ng-repeat -->
-	<div style="padding-left:2cm;">
-   		<a href="#" ng-repeat="user in editables" editable-text="user.name" onbeforesave="sendDataFromEditables($index, $data)">{{ user.name || "◻︎" }}<br></a>
-    	<!-- <a href="#" editable-select="user.status" e-ng-options="s.value as s.text for s in statuses">{{ showStatus() }}</a> -->
+	<div style="padding-left:1cm;">
+<!-- 		<div ng-controller="test">
+   			<div text-angular ng-model="htmlcontent"></div>
+   		</div> -->
+   		<textarea style="width:800px; min-height:300px; height:auto;" ng-model="htmlcontent"></textarea>
     </div>
 </div>
 }

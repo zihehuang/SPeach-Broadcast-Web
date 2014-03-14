@@ -1,39 +1,60 @@
-var sharedTextApp = angular.module('sharedTextApp', ["xeditable"]);
+var sharedTextApp = angular.module('sharedTextApp', ['textAngular']);
 
-// Boot strapping CSS for xeditables
-sharedTextApp.run(function(editableOptions) {
-    editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
-});
+sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http) {
+    // Event Listeners
+    var source = new EventSource('api/stream');
+
+    // Update from Server's event
+    source.addEventListener('message', function(e) {
+        $scope.$apply(function() {
+             var temp = JSON.parse(e.data);
+             //temp.replace("\n", "<br>");
+             $scope.text = temp;
+
+        });
+    }, false);
+
+    source.addEventListener('open', function(e) {
+    }, false);
+
+    source.addEventListener('error', function(e) {
+    }, false);
+
+    $scope.text = "";
+}
 
 // Object to keep track of all the utterances
 sharedTextApp.factory('db', function() {
-    var items = [];
+    var str = "";
     var modify = {};
-    modify.addItem = function(index, utteranceIndex, optionIndex, item) {
-        if (index > items.length - 1)
-            items.push({name: item, utteranceIndex: utteranceIndex, optionIndex: optionIndex});
-        else if (items[index].name != item) {
-            items[index].name = item;
-            items[index].utteranceIndex = utteranceIndex;
-            items[index].optionIndex = optionIndex;
-        }
-        return 'added item';
+
+    modify.append = function(newVal) {
+        str = str.concat(newVal);
+        return "appended";
     };
-    modify.getItems = function() {
-        return items;
+
+    modify.store = function(newVal) {
+        str = newVal;
+        return "stored";
     };
+
+    modify.getString = function() {
+        return str;
+    }
+
     return modify;
 });
 
 // Controller
-sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
-	
-	// Event Listeners
+sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, $sce, db) {
+    
+    // Event Listeners
     var source = new EventSource('api/stream');
 
     // Update from Server's event
-	source.addEventListener('message', function(e) {
-	    $scope.$apply(function() {
+    source.addEventListener('message', function(e) {
+        $scope.$apply(function() {
+            //db.append(JSON.parse(e.data));
             var index = 0;
 
             var dataJSON = JSON.parse(e.data);
@@ -41,22 +62,24 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
             for (var utteranceId in dataJSON) {
                 var utterance = dataJSON[utteranceId];
                 // add in this code for when we have options.
-                for (var optionId in utterance) {
+               for (var optionId in utterance) {
                     var option = utterance[optionId];
-                    // add item to db with utteranceId and optionId
-                    db.addItem(index++, utteranceId, optionId, option.text);
-                }
+                    db.append(option.text);
+               }
             }
-	    });
-	}, false);
 
-	source.addEventListener('open', function(e) {
-	}, false);
+            $scope.htmlcontent = db.getString();
 
-	source.addEventListener('error', function(e) {
-	}, false);
+        });
+    }, false);
 
-	// Function for the input box to send data to server
+    source.addEventListener('open', function(e) {
+    }, false);
+
+    source.addEventListener('error', function(e) {
+    }, false);
+
+    // Function for the input box to send data to server
     $scope.sendData = function() {
         $http({
             method: 'POST',
@@ -70,65 +93,26 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
         $scope.inputText = ""
     };
 
-    // Function for the xeditables to send data to server
-    // Requires the index of text to edit and the updated text
-    $scope.sendDataFromEditables = function(index, text) {
-        var editable = $scope.editables[index];
+    // Function for the textAngular to send data to server
+    $scope.sendData2 = function(text) {
         $http({
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             url: 'api/modify',
-            data: [editable.utteranceIndex, editable.optionIndex, text]
+            data: text
         });
     };
 
-    // Array holding all the utterances
-    $scope.editables = db.getItems();
+    $scope.$watch('htmlcontent', function(newVal){
+        console.log(newVal);
+        db.store(newVal);
+        sendData2(newVal);
+    });
 
+    // Initialization of variables
+    $scope.htmlcontent = "";
 
-    // The rest is needed for select. This is here just for testing
-    $scope.user = {
-        status: 2
-    }; 
-
-    $scope.statuses = [
-        {value: 1, text: 'status1'},
-        {value: 2, text: 'status2'},
-        {value: 3, text: 'status3'},
-        {value: 4, text: 'status4'}
-    ]; 
-
-    $scope.showStatus = function() {
-        var selected = $filter('filter')($scope.statuses, {value: $scope.user.status});
-        return ($scope.user.status && selected.length) ? selected[0].text : 'Not set';
-    };
 });
 
-sharedTextApp.controller('ViewTranscriptCtrl', function($scope) {
-    // Array with the utterances
-    $scope.utterances = []
-
-	// Event Listeners
-    var source = new EventSource('api/stream');
-
-    // Update from Server's event
-	source.addEventListener('message', function(e) {
-	    $scope.$apply(function() {
-            $scope.utterances = []
-
-            var dataJSON = JSON.parse(e.data);
-
-            for (var utteranceId in dataJSON) {
-                var utterance = dataJSON[utteranceId];
-                // add in this code for when we have options.
-                for (var optionId in utterance) {
-                    var option = utterance[optionId];
-                    // add item to db with utteranceId and optionId
-                    $scope.utterances.push(option);
-                }
-            }
-	    });
-	}, false);
-});
