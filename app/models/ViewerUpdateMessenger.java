@@ -40,7 +40,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
             if (viewerSockets.contains(eventSource)) {
                 // conection needs to be removed.
                 viewerSockets.remove(eventSource);
-                Logger.info("Browser disconnected (" + viewerSockets.size() + " browsers currently connected)");
+                Logger.info("Browser disconnected (" + viewerSockets.size() + " viewers currently connected)");
             } else {
                 // connection needs to be added.
                 eventSource.onDisconnected(new F.Callback0() {
@@ -54,7 +54,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
                 SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
                 eventSource.sendData(ourText.toSSEForm());
 
-                Logger.info("New browser connected (" + viewerSockets.size() + " browsers currently connected)");
+                Logger.info("New browser connected (" + viewerSockets.size() + " viewers currently connected)");
             }
         }
         // if the actor needs to send out an update to connected clients, do so.
@@ -62,7 +62,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
             ArrayList<EventSource> shallowCopy = new ArrayList<EventSource>(viewerSockets);
             for (EventSource es : shallowCopy) {
                 SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-                es.sendData(ourText.toSSEForm());
+                es.sendData(ourText.toSSEForm().replace("\n", "\t"));
             }
         }
     }

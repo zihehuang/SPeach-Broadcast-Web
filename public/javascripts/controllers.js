@@ -7,7 +7,10 @@ sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http) {
     // Update from Server's event
     source.addEventListener('message', function(e) {
         $scope.$apply(function() {
-             $scope.transcript = e.data;
+            // hacky solution for SSE not sending newlines: use tabs instead, so we need to replace tabs here.
+            var transcriptWithNewLines = e.data.replace(/\t/g, "\n");
+
+             $scope.transcript = transcriptWithNewLines;
         });
     }, false);
 

@@ -136,7 +136,7 @@ public class SharedTranscript extends Model {
 //        Utterance addedUtterance = Utterance.create(toAdd);
 //        this.transcript.add(addedUtterance);
 //        this.save();
-        this.toAdd += toAdd + " ";
+        this.toAdd += " " + toAdd;
         this.save();
 
         UpdateMessenger.singleton.tell("UPDATE", null);
@@ -144,9 +144,7 @@ public class SharedTranscript extends Model {
 
     /**
      * Changes the value of the shared transcript at an index.
-     * @param utteranceId The id of the utterance that needs to be changed.
-     * @param optionId The id of the option that needs to be changed.
-     * @param newValue The value to change to.
+     * @param newSharedTranscript the new value for the shared transcript.
      */
     public void modifySharedTranscript(String newSharedTranscript) {
 //        Utterance utteranceToChange = Utterance.find.byId((long) utteranceId);
