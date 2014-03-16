@@ -1,6 +1,6 @@
-var sharedTextApp = angular.module('sharedTextApp', []);
+var sharedTextApp = angular.module('sharedTextApp', ["monospaced.elastic"]);
 
-sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http) {
+sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http, $location, $anchorScroll) {
     // Event Listeners
     var source = new EventSource('api/transcript');
 
@@ -10,7 +10,11 @@ sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http) {
             // hacky solution for SSE not sending newlines: use tabs instead, so we need to replace tabs here.
             var transcriptWithNewLines = e.data.replace(/\t/g, "\n");
 
-             $scope.transcript = transcriptWithNewLines;
+            $scope.transcript = transcriptWithNewLines;
+            if ($scope.autoscroll) {
+                $location.hash('bottom');
+                $anchorScroll();
+            }
         });
     }, false);
 

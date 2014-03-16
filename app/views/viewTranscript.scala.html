@@ -7,8 +7,9 @@
 	<!-- Box to send data to server -->
 
 	<!-- Text output area. Propagates using ng-repeat -->
-	<div style="padding-left:1cm; padding-top:1cm;">
-   		<textarea disabled="disabled" style="width:800px; min-height:300px; height:auto;" ng-model="transcript"></textarea>
+	<div id="viewer_box">
+   		<textarea msd-elastic id="viewer" disabled="disabled" ng-model="transcript"></textarea>
     </div>
+    <div id="bottom">Autoscroll: <input type="checkbox" ng-model="autoscroll"></div>
 </div>
 }
