@@ -1,7 +1,6 @@
 
 #volunteer_box
 {
-	padding: 3%;
 	position: relative;
 	height: 100%;
 	width: 100%;
@@ -15,7 +14,6 @@
 
 #viewer_box
 {
-	padding: 3%;
 	position: relative;
 	height: 100%;
 	width: 100%;
@@ -27,3 +25,4 @@
 	width: 100%;
 	height: 100%;
 }
+

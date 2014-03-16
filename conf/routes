@@ -5,6 +5,9 @@
 # Home page
 GET     /                           controllers.Application.index()
 
+# Page for volunteer to make edits.
+GET     /volunteer                  controllers.Application.editTranscript()
+
 # Read-only view page
 GET     /view                       controllers.Application.viewTranscript()
 

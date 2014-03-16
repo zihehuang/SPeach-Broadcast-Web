@@ -15,6 +15,10 @@ public class Application extends Controller {
         return ok(views.html.index.render());
     }
 
+    public static Result editTranscript() {
+        return ok(views.html.volunteer.render());
+    }
+
     public static Result viewTranscript() {
         return ok(views.html.viewTranscript.render());
     }
