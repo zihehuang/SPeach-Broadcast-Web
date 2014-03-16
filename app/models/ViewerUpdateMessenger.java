@@ -62,7 +62,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
             ArrayList<EventSource> shallowCopy = new ArrayList<EventSource>(viewerSockets);
             for (EventSource es : shallowCopy) {
                 SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-                es.sendData(ourText.toSSEForm().replace("\n", "\t"));
+                es.sendData(ourText.toSSEForm());
             }
         }
     }

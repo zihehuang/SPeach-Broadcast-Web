@@ -125,7 +125,7 @@ public class SharedTranscript extends Model {
      * @return Gets this SharedTranscript in SSE + JSON form for client consumption.
      */
     public String toSSEForm() {
-        return toJSON();
+        return toJSON().replace("\n", "\t");
     }
 
     /**

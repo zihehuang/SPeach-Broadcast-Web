@@ -56,7 +56,10 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, $sce,
     // Update from Server's event
     source.addEventListener('message', function(e) {
         $scope.$apply(function() {
-            db.append(e.data);
+            // hacky solution for SSE not sending newlines: use tabs instead, so we need to replace tabs here.
+            var transcriptWithNewLines = e.data.replace(/\t/g, "\n");
+
+            db.append(transcriptWithNewLines);
             // var index = 0;
 
             // var dataJSON = JSON.parse(e.data);
