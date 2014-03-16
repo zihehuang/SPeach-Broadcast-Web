@@ -3,10 +3,6 @@
   "version": "0.0.0",
   "dependencies": {
     "angular": "1.2.2",
-    "angular-xeditable": "latest",
-    "angular-sanitize" : "1.2.2",
-    "bootstrap": "3.0.3",
-    "textAngular": "1.1.1",
-    "Font-Awesome": "4.0.3"
+    "bootstrap": "3.0.3"
   }
 }

@@ -1,4 +1,4 @@
-var sharedTextApp = angular.module('sharedTextApp', ['textAngular']);
+var sharedTextApp = angular.module('sharedTextApp', []);
 
 sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http) {
     // Event Listeners
@@ -46,7 +46,7 @@ sharedTextApp.factory('db', function() {
 });
 
 // Controller
-sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, $sce, db) {
+sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, db) {
     // boolean that stops the initial modification http request from occuring.
     var isLoading = true;
     
