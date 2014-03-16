@@ -54,8 +54,8 @@ public class UpdateMessenger extends UntypedActor {
                 });
                 editorSockets.add(eventSource);
 
-//                SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-//                eventSource.sendData(ourText.toSSEForm());
+                SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+                eventSource.sendData(ourText.toSSEForm().replace("\n", "\t"));
 
                 Logger.info("New browser connected (" + editorSockets.size() + " browsers currently connected)");
             }

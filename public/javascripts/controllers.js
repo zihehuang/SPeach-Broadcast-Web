@@ -47,6 +47,8 @@ sharedTextApp.factory('db', function() {
 
 // Controller
 sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, $sce, db) {
+    // boolean that stops the initial modification http request from occuring.
+    var isLoading = true;
     
     // Event Listeners
     var source = new EventSource('api/stream');
@@ -106,10 +108,13 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, $sce,
     };
 
     $scope.$watch('htmlcontent', function(newVal){
-        console.log(newVal);
-        db.store(newVal);
-        $scope.htmlcontent = db.getString();
-        $scope.sendData2(newVal);
+        if (!isLoading) {
+            console.log(newVal);
+            db.store(newVal);
+            $scope.htmlcontent = db.getString();
+            $scope.sendData2(newVal);
+        }
+        isLoading = false;
     });
 
     // Initialization of variables
