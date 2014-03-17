@@ -4,11 +4,8 @@
 
 <!-- Main text output area -->
 <div ng-controller="SharedTxtViewCtrl">
-	<!-- Box to send data to server -->
-
-	<!-- Text output area. Propagates using ng-repeat -->
 	<div id="viewer_box">
-   		<textarea msd-elastic id="viewer" disabled="disabled" ng-model="transcript"></textarea>
+   		<textarea msd-elastic id="viewer_textarea" disabled="disabled" ng-model="transcript"></textarea>
     </div>
     <div id="bottom">Autoscroll: <input type="checkbox" ng-model="autoscroll"></div>
 </div>

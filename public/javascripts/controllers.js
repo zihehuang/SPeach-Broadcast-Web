@@ -59,31 +59,17 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $timeout, db) 
 
     // Update from Server's event
     source.addEventListener('message', function(e) {
-        var caretPos = getCaret('volunteer');
+        var caretPos = getCaret('volunteer_textarea');
 
         $scope.$apply(function() {
             // hacky solution for SSE not sending newlines: use tabs instead, so we need to replace tabs here.
             var transcriptWithNewLines = e.data.replace(/\t/g, "\n");
 
             db.append(transcriptWithNewLines);
-            // var index = 0;
-
-            // var dataJSON = JSON.parse(e.data);
-
-            // for (var utteranceId in dataJSON) {
-            //     var utterance = dataJSON[utteranceId];
-            //     // add in this code for when we have options.
-            //    for (var optionId in utterance) {
-            //         var option = utterance[optionId];
-            //         db.append(option.text);
-            //    }
-            // }
 
             $scope.htmlcontent = db.getString();
-            $timeout(function() {}, 500);
-
         });
-        setCaretPosition('volunteer', caretPos);
+        setCaretPosition('volunteer_textarea', caretPos);
     }, false);
 
     source.addEventListener('open', function(e) {
