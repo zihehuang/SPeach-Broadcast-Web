@@ -50,7 +50,7 @@ sharedTextApp.factory('db', function() {
 });
 
 // Controller
-sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, db) {
+sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $timeout, db) {
     // boolean that stops the initial modification http request from occuring.
     var isLoading = true;
     
@@ -59,6 +59,8 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, db) {
 
     // Update from Server's event
     source.addEventListener('message', function(e) {
+        var caretPos = getCaret('volunteer');
+
         $scope.$apply(function() {
             // hacky solution for SSE not sending newlines: use tabs instead, so we need to replace tabs here.
             var transcriptWithNewLines = e.data.replace(/\t/g, "\n");
@@ -78,8 +80,10 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, db) {
             // }
 
             $scope.htmlcontent = db.getString();
+            $timeout(function() {}, 500);
 
         });
+        setCaretPosition('volunteer', caretPos);
     }, false);
 
     source.addEventListener('open', function(e) {
@@ -126,5 +130,49 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, db) {
 
     // Initialization of variables
     $scope.htmlcontent = "";
+
+    function setCaretPosition(elemId, caretPos) {
+        var elem = document.getElementById(elemId);
+
+        if(elem != null) {
+            if(elem.createTextRange) {
+                var range = elem.createTextRange();
+                range.move('character', caretPos);
+                range.select();
+            }
+            else {
+                if(elem.selectionStart) {
+                    elem.focus();
+                    elem.setSelectionRange(caretPos, caretPos);
+                }
+                else
+                    elem.focus();
+            }
+        }
+    }
+
+    function getCaret(elemId) {
+        var el = document.getElementById(elemId);
+
+        if (el.selectionStart) { 
+            return el.selectionStart; 
+        }
+        else if (document.selection) { 
+            el.focus(); 
+
+            var r = document.selection.createRange(); 
+            if (r == null) { 
+                return 0; 
+            } 
+
+            var re = el.createTextRange(), 
+            rc = re.duplicate(); 
+            re.moveToBookmark(r.getBookmark()); 
+            rc.setEndPoint('EndToStart', re); 
+
+            return rc.text.length; 
+        }  
+        return 0; 
+    }
 
 });
