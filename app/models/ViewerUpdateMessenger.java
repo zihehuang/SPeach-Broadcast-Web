@@ -52,7 +52,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
                 viewerSockets.add(eventSource);
 
                 SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-                eventSource.sendData(ourText.toSSEForm());
+                eventSource.sendData(ourText.getViewerText());
 
                 Logger.info("New browser connected (" + viewerSockets.size() + " viewers currently connected)");
             }
@@ -62,7 +62,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
             ArrayList<EventSource> shallowCopy = new ArrayList<EventSource>(viewerSockets);
             for (EventSource es : shallowCopy) {
                 SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-                es.sendData(ourText.toSSEForm());
+                es.sendData(ourText.getViewerText());
             }
         }
     }

@@ -13,6 +13,7 @@ create table option (
 create table shared_transcript (
   id                        bigint not null,
   transcript                TEXT,
+  potential_transcript      TEXT,
   to_add                    TEXT,
   constraint pk_shared_transcript primary key (id))
 ;

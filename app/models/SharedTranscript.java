@@ -25,6 +25,12 @@ public class SharedTranscript extends Model {
     private String transcript;
 
     /**
+     * The potential text for the transcript that is getting updated continuously.
+     */
+    @Column(columnDefinition = "TEXT")
+    private String potentialTranscript;
+
+    /**
      * The text that needs to be added to the transcript (from the speaker's phone).
      */
     @Column(columnDefinition = "TEXT")
@@ -54,11 +60,11 @@ public class SharedTranscript extends Model {
 
     /**
      * Constructor for shared transcript.
-
      */
     public SharedTranscript() {
         this.transcript = "";
         this.toAdd = "";
+        this.potentialTranscript = "";
     }
 
     /**
@@ -121,11 +127,19 @@ public class SharedTranscript extends Model {
     }
 
     /**
-     * Gets this SharedTranscript in SSE + JSON form for client consumption.
-     * @return Gets this SharedTranscript in SSE + JSON form for client consumption.
+     * Gets this SharedTranscript for client consumption.
+     * @return Gets this SharedTranscript for client consumption.
      */
     public String toSSEForm() {
-        return toJSON().replace("\n", "\t");
+        return getTranscript().replace("\n", "\t");
+    }
+
+    /**
+     * Gets this shared transcript as the viewer will see it. Includes potentials as well.
+     * @return The shared transcript as the viewer will see it.
+     */
+    public String getViewerText() {
+        return (getTranscript() + " " + this.potentialTranscript).replace("\n", "\t");
     }
 
     /**
@@ -133,13 +147,22 @@ public class SharedTranscript extends Model {
      * @param toAdd The text to add to the shared transcript.
      */
     public void addToSharedTranscript(String toAdd) {
-//        Utterance addedUtterance = Utterance.create(toAdd);
-//        this.transcript.add(addedUtterance);
-//        this.save();
-        this.toAdd += " " + toAdd;
-        this.save();
+        String[] splitToAdd = toAdd.split("===");
+        
+        // if the change is a potential change, then let the viewers know.
+        if (splitToAdd[1].equals("POTEN")) {
+            this.potentialTranscript = splitToAdd[0];
+            this.save();
 
-        UpdateMessenger.singleton.tell("UPDATE", null);
+            ViewerUpdateMessenger.singleton.tell("UPDATE", null);
+        }
+        // if the change is a definite change, pass the change to the editor, and he will also tell the viewers.
+        else {
+            this.potentialTranscript = "";
+            this.toAdd += " " + splitToAdd[0];
+            this.save();
+            UpdateMessenger.singleton.tell("UPDATE", null);
+        }
     }
 
     /**
