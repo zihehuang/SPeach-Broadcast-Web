@@ -148,21 +148,30 @@ public class SharedTranscript extends Model {
      */
     public void addToSharedTranscript(String toAdd) {
         String[] splitToAdd = toAdd.split("===");
-        
-        // if the change is a potential change, then let the viewers know.
-        if (splitToAdd[1].equals("POTEN")) {
-            this.potentialTranscript = splitToAdd[0];
-            this.save();
 
-            ViewerUpdateMessenger.singleton.tell("UPDATE", null);
-        }
-        // if the change is a definite change, pass the change to the editor, and he will also tell the viewers.
-        else {
-            this.potentialTranscript = "";
-            this.toAdd += " " + splitToAdd[0];
+        if (splitToAdd.length == 1) {
+            this.toAdd += " " + toAdd;
             this.save();
             UpdateMessenger.singleton.tell("UPDATE", null);
         }
+        else {
+            // if the change is a potential change, then let the viewers know.
+            if (splitToAdd[1].equals("POTEN")) {
+                this.potentialTranscript = splitToAdd[0];
+                this.save();
+
+                ViewerUpdateMessenger.singleton.tell("UPDATE", null);
+            }
+            // if the change is a definite change, pass the change to the editor, and he will also tell the viewers.
+            else {
+                this.potentialTranscript = "";
+                this.toAdd += " " + splitToAdd[0];
+                this.save();
+                UpdateMessenger.singleton.tell("UPDATE", null);
+            }
+
+        }
+
     }
 
     /**

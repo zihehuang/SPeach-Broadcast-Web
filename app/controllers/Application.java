@@ -79,4 +79,8 @@ public class Application extends Controller {
         return ok();
     }
 
+    public static Result speaker() {
+        return ok(views.html.speaker.render());
+    }
+
 }

@@ -8,6 +8,9 @@ GET     /                           controllers.Application.index()
 # Page for volunteer to make edits.
 GET     /volunteer                  controllers.Application.editTranscript()
 
+# Page for speaker
+GET     /speaker                      controllers.Application.speaker()
+
 # Read-only view page
 GET     /view                       controllers.Application.viewTranscript()
 
