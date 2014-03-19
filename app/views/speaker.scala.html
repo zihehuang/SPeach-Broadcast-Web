@@ -304,7 +304,7 @@ if (!('webkitSpeechRecognition' in window)) {
   };
 
   function send_string(new_message) {
-     var url = "http://10.117.79.203:9000/api/add";
+     var url = "http://localhost:9000/api/add";
 var method = "POST";
 var postData = new_message;
 
@@ -350,6 +350,7 @@ request.send(postData);
       upgrade();
       return;
     }
+
     for (var i = event.resultIndex; i < event.results.length; ++i) {
 
       if (event.results[i].isFinal) {
@@ -358,14 +359,12 @@ request.send(postData);
          send_string(event.results[i][0].transcript + "===" + "FINAL");
       } else {
         interim_transcript += event.results[i][0].transcript;
-        console.log(event.results[i][0].transcript + "===" + "POTEN");
-        send_string(event.results[i][0].transcript + "===" + "POTEN");
+        console.log("results array index:"+i+", value:"+event.results[i][0].transcript)
       }
     }
 
-    final_transcript = capitalize(final_transcript);
-    final_span.innerHTML = linebreak(final_transcript);
-    interim_span.innerHTML = linebreak(interim_transcript);
+    console.log(interim_transcript + "===" + "POTEN");
+    send_string(interim_transcript + "===" + "POTEN");
     if (final_transcript || interim_transcript) {
       showButtons('inline-block');
     }
