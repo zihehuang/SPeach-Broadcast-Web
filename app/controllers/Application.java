@@ -30,7 +30,7 @@ public class Application extends Controller {
             textBody = "";
         }
         SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-        ourText.addToSharedTranscript(textBody);
+        ourText.addToSharedTranscript(textBody+"\t");
 
         return ok();
     }
