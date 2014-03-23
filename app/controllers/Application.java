@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import models.RawUtterance;
 import models.SharedTranscript;
 import models.UpdateMessenger;
 import models.ViewerUpdateMessenger;
@@ -29,8 +30,27 @@ public class Application extends Controller {
         if (null == textBody) {
             textBody = "";
         }
+
+        // pull out the text and confidence from the sent string.
+        String[] textAndConfidence = textBody.split("&&&");
+        String text = textAndConfidence[0];
+        Double confidence = Double.parseDouble(textAndConfidence[1]);
+
+        // create the raw utterance in the database.
+        RawUtterance.create(text, confidence);
+
         SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-        ourText.addToSharedTranscript(textBody+"\t");
+
+        // set the confidence levels
+        if (confidence > .9) {
+            ourText.addToSharedTranscript(text+"\t");
+        }
+        else if (confidence > .8) {
+            ourText.addToSharedTranscript("*"+text+"\t");
+        }
+        else {
+            ourText.addToSharedTranscript("**"+text+"\t");
+        }
 
         return ok();
     }
