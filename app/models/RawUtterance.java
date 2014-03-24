@@ -5,6 +5,12 @@ import play.db.ebean.Model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that represents a raw utterance with text and confidence score.
@@ -16,6 +22,12 @@ public class RawUtterance extends Model {
      */
     @Id
     private long id;
+
+    /**
+     * The timestamp of the utterance.
+     */
+    @Column(columnDefinition = "TEXT")
+    private String timestamp;
 
     /**
      * The text from the STT service.
@@ -39,6 +51,7 @@ public class RawUtterance extends Model {
      * @param confidence The confidence of the utterance, from a STT service.
      */
     public RawUtterance(String text, double confidence) {
+        this.timestamp = new Timestamp(new java.util.Date().getTime()).toString();
         this.text = text;
         this.confidence = confidence;
     }
@@ -53,5 +66,26 @@ public class RawUtterance extends Model {
         RawUtterance rawUtterance = new RawUtterance(text, confidence);
         rawUtterance.save();
         return rawUtterance;
+    }
+
+    /**
+     * Static method that writes all the utterances to a file.
+     * @param filename The filename for the .csv file.
+     */
+    public static void WriteToFile(String filename) {
+        List<RawUtterance> listOfUtterances = RawUtterance.find.all();
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter(filename+".csv", "UTF-8");
+            for (int i = 0; i < listOfUtterances.size(); i++) {
+                RawUtterance curUtter = listOfUtterances.get(i);
+                writer.println(curUtter.timestamp+","+curUtter.text+","+curUtter.confidence);
+            }
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 }
