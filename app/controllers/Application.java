@@ -24,6 +24,25 @@ public class Application extends Controller {
         return ok(views.html.viewTranscript.render());
     }
 
+    public static Result requestHelp() {
+        Http.RequestBody body = request().body();
+        String textBody = body.asText();
+        if (null == textBody) {
+            textBody = "";
+        }
+
+        if (textBody.equals("")) {
+            textBody = "0";
+        }
+
+        int indexToHelpWith = Integer.parseInt(textBody);
+        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+
+        ourText.requestHelp(indexToHelpWith);
+
+        return ok();
+    }
+
     public static Result addUtterance() {
         Http.RequestBody body = request().body();
         String textBody = body.asText();

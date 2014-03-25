@@ -21,6 +21,7 @@ create table shared_transcript (
   id                        bigint not null,
   transcript                TEXT,
   to_add                    TEXT,
+  index_to_help             integer,
   constraint pk_shared_transcript primary key (id))
 ;
 

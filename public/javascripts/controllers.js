@@ -18,6 +18,18 @@ sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http, $location,
         });
     }, false);
 
+    $scope.requestHelp = function(index) {
+        $http({
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+            url: 'api/requesthelp',
+            data: index
+        });
+    };
+
+
     source.addEventListener('open', function(e) {
     }, false);
 
@@ -64,6 +76,27 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $timeout, db) 
         $scope.$apply(function() {
             // hacky solution for SSE not sending newlines: use tabs instead, so we need to replace tabs here.
             var transcriptWithNewLines = e.data.replace(/\t/g, "\n");
+
+            var splitToAdd = transcriptWithNewLines.split("###");
+            transcriptWithNewLines = splitToAdd[0];
+            if (splitToAdd.length > 1) {
+                var indexToHelp = splitToAdd[1];
+
+                var newTranscript = "";
+
+                var fullTranscript = db.getString();
+                var fullTranscriptSplit = fullTranscript.split("\n");
+                fullTranscriptSplit[indexToHelp] = "**"+fullTranscriptSplit[indexToHelp];
+
+                var prefix = "";
+                for (var i = 0; i < fullTranscriptSplit.length; i++) {
+                    prefix += newTranscript;
+                    newTranscript += fullTranscriptSplit[i];
+                    prefix = "\n";
+                }
+
+                db.store(newTranscript);
+            }
 
             db.append(transcriptWithNewLines);
 

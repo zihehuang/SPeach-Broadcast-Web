@@ -30,6 +30,15 @@ public class SharedTranscript extends Model {
     @Column(columnDefinition = "TEXT")
     private String toAdd;
 
+    public int getIndexToHelp() {
+        return indexToHelp;
+    }
+
+    /**
+     * Index that needs help.
+     */
+    private int indexToHelp = -1;
+
     /**
      * Finder for the SharedTranscript model.
      */
@@ -49,6 +58,7 @@ public class SharedTranscript extends Model {
     public void clearTextToAdd() {
         this.transcript += this.toAdd;
         this.toAdd = "";
+        this.indexToHelp = -1;
         this.save();
     }
 
@@ -162,6 +172,31 @@ public class SharedTranscript extends Model {
             UpdateMessenger.singleton.tell("UPDATE", null);
         }
 
+    }
+
+    /**
+     * Adds stars to utterances where the viewer needs help.
+     * @param indexToHelpWith The index that the viewer needs help with.
+     */
+    public void requestHelp(int indexToHelpWith) {
+        String[] lines = getTranscript().split("\n");
+        lines[indexToHelpWith] = "**" + lines[indexToHelpWith];
+        this.indexToHelp = indexToHelpWith;
+
+        StringBuilder sb = new StringBuilder();
+        String newTranscript = "";
+        String prefix = "";
+        for (String line : lines) {
+            sb.append(prefix);
+            sb.append(line);
+            prefix = "\n";
+        }
+
+        this.transcript = sb.toString();
+
+        this.save();
+
+        UpdateMessenger.singleton.tell("UPDATE", null);
     }
 
     /**

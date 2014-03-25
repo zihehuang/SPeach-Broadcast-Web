@@ -67,6 +67,12 @@ public class UpdateMessenger extends UntypedActor {
             SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
             String textToAdd = ourText.getTextToAdd();
 
+            int indexToHelp = ourText.getIndexToHelp();
+
+            if (indexToHelp != -1) {
+                textToAdd += "###" + indexToHelp;
+            }
+
             for(EventSource es: shallowCopy) {
                 es.sendData(textToAdd);
             }
