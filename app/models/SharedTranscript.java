@@ -25,12 +25,6 @@ public class SharedTranscript extends Model {
     private String transcript;
 
     /**
-     * The potential text for the transcript that is getting updated continuously.
-     */
-    @Column(columnDefinition = "TEXT")
-    private String potentialTranscript;
-
-    /**
      * The text that needs to be added to the transcript (from the speaker's phone).
      */
     @Column(columnDefinition = "TEXT")
@@ -64,7 +58,6 @@ public class SharedTranscript extends Model {
     public SharedTranscript() {
         this.transcript = "";
         this.toAdd = "";
-        this.potentialTranscript = "";
     }
 
     /**
@@ -139,7 +132,21 @@ public class SharedTranscript extends Model {
      * @return The shared transcript as the viewer will see it.
      */
     public String getViewerText() {
-        return (getTranscript() + " " + this.potentialTranscript).replace("\n", "\t");
+        String[] lines = getTranscript().split("\n");
+        StringBuilder sb = new StringBuilder();
+        String prefix = "";
+        sb.append("[");
+        for (String line : lines) {
+            line = line.replace("\n", "\t");
+
+            sb.append(prefix);
+            sb.append("\"");
+            sb.append(line);
+            sb.append("\"");
+            prefix = ",";
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     /**
@@ -153,23 +160,6 @@ public class SharedTranscript extends Model {
             this.toAdd += " " + toAdd;
             this.save();
             UpdateMessenger.singleton.tell("UPDATE", null);
-        }
-        else {
-            // if the change is a potential change, then let the viewers know.
-            if (splitToAdd[1].equals("POTEN")) {
-                this.potentialTranscript = splitToAdd[0];
-                this.save();
-
-                ViewerUpdateMessenger.singleton.tell("UPDATE", null);
-            }
-            // if the change is a definite change, pass the change to the editor, and he will also tell the viewers.
-            else {
-                this.potentialTranscript = "";
-                this.toAdd += " " + splitToAdd[0];
-                this.save();
-                UpdateMessenger.singleton.tell("UPDATE", null);
-            }
-
         }
 
     }

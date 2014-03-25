@@ -1,16 +1,16 @@
 var sharedTextApp = angular.module('sharedTextApp', ["monospaced.elastic"]);
 
 sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http, $location, $anchorScroll) {
+    $scope.utterances = [];
+
     // Event Listeners
     var source = new EventSource('api/transcript');
 
     // Update from Server's event
     source.addEventListener('message', function(e) {
         $scope.$apply(function() {
-            // hacky solution for SSE not sending newlines: use tabs instead, so we need to replace tabs here.
-            var transcriptWithNewLines = e.data.replace(/\t/g, "\n");
+            $scope.utterances = JSON.parse(e.data);
 
-            $scope.transcript = transcriptWithNewLines;
             if ($scope.autoscroll) {
                 $location.hash('bottom');
                 $anchorScroll();
