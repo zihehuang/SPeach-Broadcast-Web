@@ -43,3 +43,10 @@ h1 {text-align:center}
 	font-size: 14pt;
 }
 
+.viewer-text {
+    font-size: 15pt;
+}
+
+a:hover {
+    text-decoration: none;
+}
