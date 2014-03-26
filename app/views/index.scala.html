@@ -1,26 +1,8 @@
 @()
 
-@main("Welcome to Play") {
+@main("Live Editing - SPeach") {
 
-<!-- Override bootstrap styling -->
-<style>
-a:link { color: rgb(0, 0, 0); border-bottom: none; font-size: 20px; }
-a:hover { background-color:yellow; }
-</style>
+<h1>Welcome to SPeach</h1>
+<img id="logo" src="@routes.Assets.at("images/logo.png")" alt="SPeach Logo">
 
-<!-- Main text output area -->
-<div ng-controller="SharedTxtCtrl">
-	<!-- Box to send data to server -->
-	<div>
-		<input type="text" ng-model="inputText" />
-      	<button ng-click="sendData()">Send</button>
-	</div>
-	<br>
-
-	<!-- Text output area. Propagates using ng-repeat -->
-	<div style="padding-left:2cm;">
-   		<a href="#" ng-repeat="user in editables" editable-text="user.name" onbeforesave="sendDataFromEditables($index, $data)">{{ user.name || "◻︎" }}<br></a>
-    	<!-- <a href="#" editable-select="user.status" e-ng-options="s.value as s.text for s in statuses">{{ showStatus() }}</a> -->
-    </div>
-</div>
 }

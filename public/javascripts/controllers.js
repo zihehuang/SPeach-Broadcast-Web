@@ -1,58 +1,117 @@
-var sharedTextApp = angular.module('sharedTextApp', ["xeditable"]);
+var sharedTextApp = angular.module('sharedTextApp', ["monospaced.elastic"]);
 
-// Boot strapping CSS for xeditables
-sharedTextApp.run(function(editableOptions) {
-    editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
+sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http, $location, $anchorScroll) {
+    $scope.utterances = [];
+
+    // Event Listeners
+    var source = new EventSource('api/transcript');
+
+    // Update from Server's event
+    source.addEventListener('message', function(e) {
+        $scope.$apply(function() {
+            $scope.utterances = JSON.parse(e.data);
+
+            if ($scope.autoscroll) {
+                $location.hash('bottom');
+                $anchorScroll();
+            }
+        });
+    }, false);
+
+    $scope.requestHelp = function(index) {
+        $http({
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+            url: 'api/requesthelp',
+            data: index
+        });
+    };
+
+
+    source.addEventListener('open', function(e) {
+    }, false);
+
+    source.addEventListener('error', function(e) {
+    }, false);
+
+    $scope.transcript = "";
 });
 
 // Object to keep track of all the utterances
 sharedTextApp.factory('db', function() {
-    var items = [];
+    var str = "";
     var modify = {};
-    modify.addItem = function(index, item) {
-        if (index > items.length - 1)
-            items.push({name: item});
-        else if (items[index].name != item)
-            items[index].name = item;
-        return 'added item';
+
+    modify.append = function(newVal) {
+        str = str.concat(newVal);
+        return "appended";
     };
-    modify.getItems = function() {
-        return items;
+
+    modify.store = function(newVal) {
+        str = newVal;
+        return "stored";
     };
+
+    modify.getString = function() {
+        return str;
+    }
+
     return modify;
 });
 
 // Controller
-sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
-	
-	// Event Listeners
+sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $timeout, db) {
+    // boolean that stops the initial modification http request from occuring.
+    var isLoading = true;
+    
+    // Event Listeners
     var source = new EventSource('api/stream');
 
     // Update from Server's event
-	source.addEventListener('message', function(e) {
-	    $scope.$apply(function() {
-            var index = 0;
+    source.addEventListener('message', function(e) {
+        var caretPos = getCaret('volunteer_textarea');
 
-            var dataJSON = JSON.parse(e.data);
+        $scope.$apply(function() {
+            // hacky solution for SSE not sending newlines: use tabs instead, so we need to replace tabs here.
+            var transcriptWithNewLines = e.data.replace(/\t/g, "\n");
 
-            for (var utteranceId in dataJSON) {
-                var utterance = dataJSON[utteranceId];
-                // add in this code for when we have options.
-                for (var optionId in utterance) {
-                    var option = utterance[optionId];
-                    db.addItem(index++, option.text);
+            var splitToAdd = transcriptWithNewLines.split("###");
+            transcriptWithNewLines = splitToAdd[0];
+            if (splitToAdd.length > 1) {
+                var indexToHelp = splitToAdd[1];
+
+                var newTranscript = "";
+
+                var fullTranscript = db.getString();
+                var fullTranscriptSplit = fullTranscript.split("\n");
+                fullTranscriptSplit[indexToHelp] = "**"+fullTranscriptSplit[indexToHelp];
+
+                var prefix = "";
+                for (var i = 0; i < fullTranscriptSplit.length; i++) {
+                    prefix += newTranscript;
+                    newTranscript += fullTranscriptSplit[i];
+                    prefix = "\n";
                 }
+
+                db.store(newTranscript);
             }
-	    });
-	}, false);
 
-	source.addEventListener('open', function(e) {
-	}, false);
+            db.append(transcriptWithNewLines);
 
-	source.addEventListener('error', function(e) {
-	}, false);
+            $scope.htmlcontent = db.getString();
+        });
+        setCaretPosition('volunteer_textarea', caretPos);
+    }, false);
 
-	// Function for the input box to send data to server
+    source.addEventListener('open', function(e) {
+    }, false);
+
+    source.addEventListener('error', function(e) {
+    }, false);
+
+    // Function for the input box to send data to server
     $scope.sendData = function() {
         $http({
             method: 'POST',
@@ -66,37 +125,73 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $filter, db) {
         $scope.inputText = ""
     };
 
-    // Function for the xeditables to send data to server
-    // Requires the index of text to edit and the updated text
-    $scope.sendDataFromEditables = function(index, text) {
+    // Function for the textAngular to send data to server
+    $scope.sendData2 = function(text) {
         $http({
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'text/plain',
             },
             url: 'api/modify',
-            data: [index, text]
+            data: text
         });
     };
 
-    // Array holding all the utterances
-    $scope.editables = db.getItems();
+    $scope.$watch('htmlcontent', function(newVal){
+        if (!isLoading) {
+            console.log(newVal);
+            db.store(newVal);
+            $scope.htmlcontent = db.getString();
+            $scope.sendData2(newVal);
+        }
+        isLoading = false;
+    });
 
+    // Initialization of variables
+    $scope.htmlcontent = "";
 
-    // The rest is needed for select. This is here just for testing
-    $scope.user = {
-        status: 2
-    }; 
+    function setCaretPosition(elemId, caretPos) {
+        var elem = document.getElementById(elemId);
 
-    $scope.statuses = [
-        {value: 1, text: 'status1'},
-        {value: 2, text: 'status2'},
-        {value: 3, text: 'status3'},
-        {value: 4, text: 'status4'}
-    ]; 
+        if(elem != null) {
+            if(elem.createTextRange) {
+                var range = elem.createTextRange();
+                range.move('character', caretPos);
+                range.select();
+            }
+            else {
+                if(elem.selectionStart) {
+                    elem.focus();
+                    elem.setSelectionRange(caretPos, caretPos);
+                }
+                else
+                    elem.focus();
+            }
+        }
+    }
 
-    $scope.showStatus = function() {
-        var selected = $filter('filter')($scope.statuses, {value: $scope.user.status});
-        return ($scope.user.status && selected.length) ? selected[0].text : 'Not set';
-    };
+    function getCaret(elemId) {
+        var el = document.getElementById(elemId);
+
+        if (el.selectionStart) { 
+            return el.selectionStart; 
+        }
+        else if (document.selection) { 
+            el.focus(); 
+
+            var r = document.selection.createRange(); 
+            if (r == null) { 
+                return 0; 
+            } 
+
+            var re = el.createTextRange(), 
+            rc = re.duplicate(); 
+            re.moveToBookmark(r.getBookmark()); 
+            rc.setEndPoint('EndToStart', re); 
+
+            return rc.text.length; 
+        }  
+        return 0; 
+    }
+
 });

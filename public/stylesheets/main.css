@@ -1,0 +1,52 @@
+h1 {text-align:center}
+
+#logo {
+	max-width: 100%;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#volunteer_box
+{
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+
+#volunteer_textarea
+{
+	border-left: none;
+	border-right: none;
+	outline: none;
+	padding-top:10px;
+	padding-bottom:10px;
+	width: 100%;
+	min-height: 300px;
+	font-size: 14pt;
+}
+
+#viewer_box
+{
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+
+#viewer_textarea
+{
+	border: none;
+	padding-top:10px;
+	padding-bottom:10px;
+	width: 100%;
+	min-height: 300px;
+	font-size: 14pt;
+}
+
+.viewer-text {
+    font-size: 15pt;
+}
+
+a:hover {
+    text-decoration: none;
+}

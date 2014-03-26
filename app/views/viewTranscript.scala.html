@@ -1,0 +1,13 @@
+@()
+
+@main("View Transcript - SPeach") {
+
+<!-- Main text output area -->
+<div ng-controller="SharedTxtViewCtrl">
+	<div id="viewer_box">
+   		<!--<textarea msd-elastic id="viewer_textarea" disabled="disabled" ng-model="transcript"></textarea>-->
+        <a href="" class="viewer-text" ng-click="requestHelp($index)" ng-repeat="utterance in utterances">{{utterance}}</a>
+    </div>
+    <div id="bottom">Autoscroll: <input type="checkbox" ng-model="autoscroll"></div>
+</div>
+}
