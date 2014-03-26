@@ -79,6 +79,8 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $timeout, db) 
 
             var splitToAdd = transcriptWithNewLines.split("###");
             transcriptWithNewLines = splitToAdd[0];
+
+            // if there is a request for help.
             if (splitToAdd.length > 1) {
                 var indexToHelp = splitToAdd[1];
 

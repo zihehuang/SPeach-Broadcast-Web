@@ -45,6 +45,7 @@ h1 {text-align:center}
 
 .viewer-text {
     font-size: 15pt;
+    display: block;
 }
 
 a:hover {
