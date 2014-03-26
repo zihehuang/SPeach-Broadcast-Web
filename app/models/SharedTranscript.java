@@ -49,7 +49,7 @@ public class SharedTranscript extends Model {
      * @return
      */
     public String getTextToAdd() {
-        return toAdd;
+        return toAdd.replace("\n", "\t");
     }
 
     /**

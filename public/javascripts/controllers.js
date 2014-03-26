@@ -92,7 +92,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $timeout, db) 
 
                 var prefix = "";
                 for (var i = 0; i < fullTranscriptSplit.length; i++) {
-                    prefix += newTranscript;
+                    newTranscript += prefix;
                     newTranscript += fullTranscriptSplit[i];
                     prefix = "\n";
                 }
