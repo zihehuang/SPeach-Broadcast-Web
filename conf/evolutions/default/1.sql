@@ -13,6 +13,7 @@ create table option (
 create table raw_utterance (
   id                        bigint not null,
   text                      TEXT,
+  timestamp                 TEXT,
   confidence                double,
   constraint pk_raw_utterance primary key (id))
 ;

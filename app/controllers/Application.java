@@ -58,18 +58,22 @@ public class Application extends Controller {
         // create the raw utterance in the database.
         RawUtterance.create(text, confidence);
 
+        // write out to a file. the filename should be unique to each session
+        RawUtterance.WriteToFile("Utterances");
+
         SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
 
-        // set the confidence levels
-        if (confidence > .9) {
-            ourText.addToSharedTranscript(text+"\t");
-        }
-        else if (confidence > .8) {
-            ourText.addToSharedTranscript("*"+text+"\t");
-        }
-        else {
-            ourText.addToSharedTranscript("**"+text+"\t");
-        }
+//        // set the confidence levels
+//        if (confidence > .9) {
+//            ourText.addToSharedTranscript(text+"\t");
+//        }
+//        else if (confidence > .8) {
+//            ourText.addToSharedTranscript("*"+text+"\t");
+//        }
+//        else {
+//            ourText.addToSharedTranscript("**"+text+"\t");
+//        }
+        ourText.addToSharedTranscript(text+"\t");
 
         return ok();
     }
