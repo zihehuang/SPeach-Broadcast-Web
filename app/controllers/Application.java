@@ -73,7 +73,12 @@ public class Application extends Controller {
 //        else {
 //            ourText.addToSharedTranscript("**"+text+"\t");
 //        }
-        ourText.addToSharedTranscript(text+"\t");
+        String toAdd = "";
+        if (!ourText.getTranscript().equals("")) {
+            toAdd = "\t";
+        }
+
+        ourText.addToSharedTranscript(toAdd+text);
 
         return ok();
     }

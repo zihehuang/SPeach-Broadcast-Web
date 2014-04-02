@@ -167,7 +167,7 @@ public class SharedTranscript extends Model {
         String[] splitToAdd = toAdd.split("===");
 
         if (splitToAdd.length == 1) {
-            this.toAdd += " " + toAdd;
+            this.toAdd += toAdd;
             this.save();
             UpdateMessenger.singleton.tell("UPDATE", null);
         }
