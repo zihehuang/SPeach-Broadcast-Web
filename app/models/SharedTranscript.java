@@ -3,6 +3,9 @@ package models;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,7 +170,7 @@ public class SharedTranscript extends Model {
         String[] splitToAdd = toAdd.split("===");
 
         if (splitToAdd.length == 1) {
-            this.toAdd += " " + toAdd;
+            this.toAdd += toAdd;
             this.save();
             UpdateMessenger.singleton.tell("UPDATE", null);
         }
@@ -208,6 +211,7 @@ public class SharedTranscript extends Model {
 //        utteranceToChange.changeText(optionId, newValue);
         this.transcript = newSharedTranscript;
         this.save();
+        this.WriteToFile("final_transcript");
 
         ViewerUpdateMessenger.singleton.tell("UPDATE", null);
     }
@@ -222,6 +226,23 @@ public class SharedTranscript extends Model {
             SharedTranscript.create();
         }
         return SharedTranscript.find.byId((long)1);
+    }
+
+    /**
+     * Static method that writes all the modification to a file.
+     * @param filename The filename for the .csv file.
+     */
+    public static void WriteToFile(String filename) {
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter(filename+".csv", "UTF-8");
+            writer.println(getOnlySharedTranscript().getTranscript());
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -68,17 +68,22 @@ public class Application extends Controller {
 
         SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
 
-//        // set the confidence levels
-//        if (confidence > .9) {
-//            ourText.addToSharedTranscript(text+"\t");
-//        }
-//        else if (confidence > .8) {
-//            ourText.addToSharedTranscript("*"+text+"\t");
-//        }
-//        else {
-//            ourText.addToSharedTranscript("**"+text+"\t");
-//        }
-        ourText.addToSharedTranscript(text+"\t");
+
+        String toAdd = "";
+        if (!ourText.getTranscript().equals("")) {
+            toAdd = "\t";
+        }
+
+        // set the confidence levels
+        if (confidence > .9) {
+            ourText.addToSharedTranscript(toAdd+text);
+        }
+        else if (confidence > .8) {
+            ourText.addToSharedTranscript(toAdd+"*"+text);
+        }
+        else {
+            ourText.addToSharedTranscript(toAdd+"**"+text);
+        }
 
         return ok();
     }

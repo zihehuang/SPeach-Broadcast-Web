@@ -12,8 +12,13 @@ create table option (
 
 create table raw_utterance (
   id                        bigint not null,
+<<<<<<< HEAD
   text                      TEXT,
   timestamp                 TEXT,
+=======
+  timestamp                 TEXT,
+  text                      TEXT,
+>>>>>>> upstream/single-volunteer
   confidence                double,
   constraint pk_raw_utterance primary key (id))
 ;
