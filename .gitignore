@@ -15,4 +15,4 @@ dist
 /.settings
 /public/bower_components
 /.target
-*.csv
+/*.csv
