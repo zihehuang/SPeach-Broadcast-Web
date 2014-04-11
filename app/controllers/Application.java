@@ -16,15 +16,15 @@ public class Application extends Controller {
         return ok(views.html.index.render());
     }
 
-    public static Result editTranscript() {
+    public static Result editTranscript(Long id) {
         return ok(views.html.volunteer.render());
     }
 
-    public static Result viewTranscript() {
+    public static Result viewTranscript(Long id) {
         return ok(views.html.viewTranscript.render());
     }
 
-    public static Result requestHelp() {
+    public static Result requestHelp(Long id) {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
@@ -43,7 +43,7 @@ public class Application extends Controller {
         return ok();
     }
 
-    public static Result addUtterance() {
+    public static Result addUtterance(Long id) {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
@@ -83,7 +83,7 @@ public class Application extends Controller {
         return ok();
     }
 
-    public static Result getUtterances() {
+    public static Result getUtterances(Long id) {
         response().setContentType("text/event-stream");
         SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
 
@@ -95,7 +95,7 @@ public class Application extends Controller {
         });
     }
 
-    public static Result getTranscriptData() {
+    public static Result getTranscriptData(Long id) {
         return ok(new EventSource() {
             @Override
             public void onConnected() {
@@ -104,13 +104,7 @@ public class Application extends Controller {
         });
     }
 
-    public static Result modifyOption() {
-//        Http.RequestBody body = request().body();
-//        JsonNode jsonNode = body.asJson();
-//
-//        int utteranceIndex = jsonNode.get(0).asInt();
-//        int optionIndex = jsonNode.get(1).asInt();
-//        String newValue = jsonNode.get(2).asText();
+    public static Result modifyOption(Long id) {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
@@ -123,11 +117,11 @@ public class Application extends Controller {
         return ok();
     }
 
-    public static Result upvoteOption() {
+    public static Result upvoteOption(Long id) {
         return ok();
     }
 
-    public static Result speaker() {
+    public static Result speaker(Long id) {
         return ok(views.html.speaker.render());
     }
 

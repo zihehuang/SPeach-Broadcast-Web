@@ -6,21 +6,21 @@
 GET     /                           controllers.Application.index()
 
 # Page for volunteer to make edits.
-GET     /volunteer                  controllers.Application.editTranscript()
+GET     /volunteer/:id                  controllers.Application.editTranscript(id: Long)
 
 # Page for speaker
-GET     /speaker                      controllers.Application.speaker()
+GET     /speaker/:id                      controllers.Application.speaker(id: Long)
 
 # Read-only view page
-GET     /view                       controllers.Application.viewTranscript()
+GET     /view/:id                       controllers.Application.viewTranscript(id: Long)
 
 # API routes
-GET     /api/stream                 controllers.Application.getUtterances()
-GET     /api/transcript             controllers.Application.getTranscriptData()
-POST    /api/add                    controllers.Application.addUtterance()
-POST    /api/modify                 controllers.Application.modifyOption()
-POST    /api/upvote                 controllers.Application.upvoteOption()
-POST    /api/requesthelp            controllers.Application.requestHelp()
+GET     /api/stream/:id                 controllers.Application.getUtterances(id: Long)
+GET     /api/transcript/:id             controllers.Application.getTranscriptData(id: Long)
+POST    /api/add/:id                    controllers.Application.addUtterance(id: Long)
+POST    /api/modify/:id                 controllers.Application.modifyOption(id: Long)
+POST    /api/upvote/:id                 controllers.Application.upvoteOption(id: Long)
+POST    /api/requesthelp/:id            controllers.Application.requestHelp(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
