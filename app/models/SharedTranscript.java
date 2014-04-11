@@ -3,6 +3,9 @@ package models;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,13 +24,54 @@ public class SharedTranscript extends Model {
     /**
      * The list of utterances in the shared transcript.
      */
-    @ManyToMany
-    private List<Utterance> utteranceList = new ArrayList<Utterance>();
+    @Column(columnDefinition = "TEXT")
+    private String transcript;
+
+    /**
+     * The text that needs to be added to the transcript (from the speaker's phone).
+     */
+    @Column(columnDefinition = "TEXT")
+    private String toAdd;
+
+    public int getIndexToHelp() {
+        return indexToHelp;
+    }
+
+    /**
+     * Index that needs help.
+     */
+    private int indexToHelp = -1;
 
     /**
      * Finder for the SharedTranscript model.
      */
     public static Finder<Long, SharedTranscript> find = new Finder<Long, SharedTranscript>(Long.class, SharedTranscript.class);
+
+    /**
+     * Gets the text to add to the transcript.
+     * @return
+     */
+    public String getTextToAdd() {
+        return toAdd.replace("\n", "\t");
+    }
+
+    /**
+     * Clears the text to add for this transcript.
+     */
+    public void clearTextToAdd() {
+        this.transcript += this.toAdd;
+        this.toAdd = "";
+        this.indexToHelp = -1;
+        this.save();
+    }
+
+    /**
+     * Constructor for shared transcript.
+     */
+    public SharedTranscript() {
+        this.transcript = "";
+        this.toAdd = "";
+    }
 
     /**
      * Static method for encapsulating the creation and saving of a SharedTranscript.
@@ -59,8 +103,8 @@ public class SharedTranscript extends Model {
      * Gets the list of utterances in this shared transcript.
      * @return The list of utterances.
      */
-    public List<Utterance> getUtteranceList() {
-        return this.utteranceList;
+    public String getTranscript() {
+        return this.transcript;
     }
 
     /**
@@ -68,47 +112,54 @@ public class SharedTranscript extends Model {
      * @return The JSON form of this SharedTranscript.
      */
     public String toJSON() {
-        List<Utterance> utteranceList = this.getUtteranceList();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-
-        // go through each utterance and add it as an entry.
-        for (int i = 0; i < utteranceList.size(); i++) {
-            sb.append(utteranceList.get(i).toString());
-            // if it is not the last element, add a comma.
-            if (i < utteranceList.size() - 1) {
-                sb.append(",");
-            }
-        }
-        sb.append("}");
-
-        return sb.toString();
-    }
-//    public String toJSON() {
-//        List<Utterance> sharedText = getUtteranceList();
+//        List<Utterance> utteranceList = this.getTranscript();
 //
 //        StringBuilder sb = new StringBuilder();
-//        sb.append("[");
+//        sb.append("{");
 //
-//        for (int i = 0; i < sharedText.size(); i++) {
-//            sb.append(sharedText.get(i).toEscapedString());
-//            // if it is the last element, don't add a comma.
-//            if (i < sharedText.size() - 1) {
+//        // go through each utterance and add it as an entry.
+//        for (int i = 0; i < utteranceList.size(); i++) {
+//            sb.append(utteranceList.get(i).toString());
+//            // if it is not the last element, add a comma.
+//            if (i < utteranceList.size() - 1) {
 //                sb.append(",");
 //            }
 //        }
-//        sb.append("]");
-//
+//        sb.append("}");
+
 //        return sb.toString();
-//    }
+
+        return getTranscript();
+    }
 
     /**
-     * Gets this SharedTranscript in SSE + JSON form for client consumption.
-     * @return Gets this SharedTranscript in SSE + JSON form for client consumption.
+     * Gets this SharedTranscript for client consumption.
+     * @return Gets this SharedTranscript for client consumption.
      */
     public String toSSEForm() {
-        return toJSON();
+        return getTranscript().replace("\n", "\t");
+    }
+
+    /**
+     * Gets this shared transcript as the viewer will see it. Includes potentials as well.
+     * @return The shared transcript as the viewer will see it.
+     */
+    public String getViewerText() {
+        String[] lines = getTranscript().split("\n");
+        StringBuilder sb = new StringBuilder();
+        String prefix = "";
+        sb.append("[");
+        for (String line : lines) {
+            line = line.replace("\n", "\t");
+
+            sb.append(prefix);
+            sb.append("\"");
+            sb.append(line);
+            sb.append("\"");
+            prefix = ",";
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     /**
@@ -116,8 +167,36 @@ public class SharedTranscript extends Model {
      * @param toAdd The text to add to the shared transcript.
      */
     public void addToSharedTranscript(String toAdd) {
-        Utterance addedUtterance = Utterance.create(toAdd);
-        this.utteranceList.add(addedUtterance);
+        String[] splitToAdd = toAdd.split("===");
+
+        if (splitToAdd.length == 1) {
+            this.toAdd += toAdd;
+            this.save();
+            UpdateMessenger.singleton.tell("UPDATE", null);
+        }
+
+    }
+
+    /**
+     * Adds stars to utterances where the viewer needs help.
+     * @param indexToHelpWith The index that the viewer needs help with.
+     */
+    public void requestHelp(int indexToHelpWith) {
+        String[] lines = getTranscript().split("\n");
+        lines[indexToHelpWith] = "**" + lines[indexToHelpWith];
+        this.indexToHelp = indexToHelpWith;
+
+        StringBuilder sb = new StringBuilder();
+        String newTranscript = "";
+        String prefix = "";
+        for (String line : lines) {
+            sb.append(prefix);
+            sb.append(line);
+            prefix = "\n";
+        }
+
+        this.transcript = sb.toString();
+
         this.save();
 
         UpdateMessenger.singleton.tell("UPDATE", null);
@@ -125,15 +204,16 @@ public class SharedTranscript extends Model {
 
     /**
      * Changes the value of the shared transcript at an index.
-     * @param utteranceId The id of the utterance that needs to be changed.
-     * @param optionId The id of the option that needs to be changed.
-     * @param newValue The value to change to.
+     * @param newSharedTranscript the new value for the shared transcript.
      */
-    public void modifySharedTranscript(int utteranceId, int optionId, String newValue) {
-        Utterance utteranceToChange = Utterance.find.byId((long) utteranceId);
-        utteranceToChange.changeText(optionId, newValue);
+    public void modifySharedTranscript(String newSharedTranscript) {
+//        Utterance utteranceToChange = Utterance.find.byId((long) utteranceId);
+//        utteranceToChange.changeText(optionId, newValue);
+        this.transcript = newSharedTranscript;
+        this.save();
+        this.WriteToFile("final_transcript");
 
-        UpdateMessenger.singleton.tell("UPDATE", null);
+        ViewerUpdateMessenger.singleton.tell("UPDATE", null);
     }
 
     /**
@@ -146,6 +226,23 @@ public class SharedTranscript extends Model {
             SharedTranscript.create();
         }
         return SharedTranscript.find.byId((long)1);
+    }
+
+    /**
+     * Static method that writes all the modification to a file.
+     * @param filename The filename for the .csv file.
+     */
+    public static void WriteToFile(String filename) {
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter(filename+".csv", "UTF-8");
+            writer.println(getOnlySharedTranscript().getTranscript());
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
 }
