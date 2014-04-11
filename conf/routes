@@ -6,7 +6,7 @@
 GET     /                           controllers.Application.index()
 
 # URL for a new session
-GET     /newsession/:name                     controllers.Application.newSession(name: String)
+POST     /newsession                     controllers.Application.newSession()
 
 # Page for volunteer to make edits.
 GET     /volunteer/:id                  controllers.Application.editTranscript(id: Long)

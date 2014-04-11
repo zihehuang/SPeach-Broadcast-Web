@@ -2,21 +2,31 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
+import models.forms.SessionForm;
+import play.data.Form;
 import play.mvc.*;
 import playextension.EditorEventSource;
 import playextension.EventSource;
 import playextension.ViewerEventSource;
 
+import static play.data.Form.form;
+
 public class Application extends Controller {
 
     public static Result index() {
-        return ok(views.html.index.render());
+        return ok(views.html.index.render(Form.form(SessionForm.class)));
     }
 
-    public static Result newSession(String name) {
-        Session session = Session.create(name);
+    public static Result newSession() {
+        final Form<SessionForm> filledForm = form(SessionForm.class).bindFromRequest();
 
-        return redirect(routes.Application.viewTranscript(session.getId()));
+        if (filledForm.hasErrors()) {
+            return badRequest(views.html.index.render(filledForm));
+        } else {
+            Session session = Session.create(filledForm.name());
+            return redirect(routes.Application.viewTranscript(session.getId()));
+        }
+
     }
 
     public static Result editTranscript(Long id) {
