@@ -26,15 +26,14 @@ public class Application extends Controller {
             Session session = Session.create(filledForm.name());
             return redirect(routes.Application.viewTranscript(session.getId()));
         }
-
     }
 
     public static Result editTranscript(Long id) {
-        return ok(views.html.volunteer.render());
+        return ok(views.html.volunteer.render(id));
     }
 
     public static Result viewTranscript(Long id) {
-        return ok(views.html.viewTranscript.render());
+        return ok(views.html.viewTranscript.render(id));
     }
 
     public static Result requestHelp(Long id) {

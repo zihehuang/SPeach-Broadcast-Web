@@ -1,13 +1,13 @@
 @(nameForm: Form[_])
 
-@main("Live Editing - SPeach") {
+@main("Live Editing - SPeach", 0) {
     <div class="text-center">
         <h1>Welcome to SPeach</h1>
         <img id="logo" src="@routes.Assets.at("images/logo.png")" alt="SPeach Logo">
 
         @helper.form(action = routes.Application.newSession) {
             @helper.inputText(nameForm("name"), '_showConstraints -> false)
-        
+
             <input type="submit" value="Start a New Session!" class="btn btn-primary btn-lg">
         }
 
