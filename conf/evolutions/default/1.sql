@@ -18,6 +18,13 @@ create table raw_utterance (
   constraint pk_raw_utterance primary key (id))
 ;
 
+create table session (
+  id                        bigint not null,
+  name                      varchar(255),
+  transcript_id             bigint,
+  constraint pk_session primary key (id))
+;
+
 create table shared_transcript (
   id                        bigint not null,
   transcript                TEXT,
@@ -28,6 +35,7 @@ create table shared_transcript (
 
 create table utterance (
   id                        bigint not null,
+  utterance_id              bigint,
   constraint pk_utterance primary key (id))
 ;
 
@@ -41,12 +49,16 @@ create sequence option_seq;
 
 create sequence raw_utterance_seq;
 
+create sequence session_seq;
+
 create sequence shared_transcript_seq;
 
 create sequence utterance_seq;
 
 alter table option add constraint fk_option_parent_1 foreign key (parent_id) references utterance (id) on delete restrict on update restrict;
 create index ix_option_parent_1 on option (parent_id);
+alter table session add constraint fk_session_transcript_2 foreign key (transcript_id) references shared_transcript (id) on delete restrict on update restrict;
+create index ix_session_transcript_2 on session (transcript_id);
 
 
 
@@ -62,6 +74,8 @@ drop table if exists option;
 
 drop table if exists raw_utterance;
 
+drop table if exists session;
+
 drop table if exists shared_transcript;
 
 drop table if exists utterance;
@@ -73,6 +87,8 @@ SET REFERENTIAL_INTEGRITY TRUE;
 drop sequence if exists option_seq;
 
 drop sequence if exists raw_utterance_seq;
+
+drop sequence if exists session_seq;
 
 drop sequence if exists shared_transcript_seq;
 

@@ -108,31 +108,6 @@ public class SharedTranscript extends Model {
     }
 
     /**
-     * Gets the JSON form of this SharedTranscript for client consumption.
-     * @return The JSON form of this SharedTranscript.
-     */
-    public String toJSON() {
-//        List<Utterance> utteranceList = this.getTranscript();
-//
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("{");
-//
-//        // go through each utterance and add it as an entry.
-//        for (int i = 0; i < utteranceList.size(); i++) {
-//            sb.append(utteranceList.get(i).toString());
-//            // if it is not the last element, add a comma.
-//            if (i < utteranceList.size() - 1) {
-//                sb.append(",");
-//            }
-//        }
-//        sb.append("}");
-
-//        return sb.toString();
-
-        return getTranscript();
-    }
-
-    /**
      * Gets this SharedTranscript for client consumption.
      * @return Gets this SharedTranscript for client consumption.
      */
