@@ -19,8 +19,17 @@ public class Session extends Model {
     private long id;
 
     /**
+     * Gets the session id.
+     * @return The session id.
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
      * The name of the session.
      */
+
     private String name;
 
     /**

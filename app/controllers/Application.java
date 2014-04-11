@@ -1,10 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import models.RawUtterance;
-import models.SharedTranscript;
-import models.UpdateMessenger;
-import models.ViewerUpdateMessenger;
+import models.*;
 import play.mvc.*;
 import playextension.EditorEventSource;
 import playextension.EventSource;
@@ -14,6 +11,12 @@ public class Application extends Controller {
 
     public static Result index() {
         return ok(views.html.index.render());
+    }
+
+    public static Result newSession(String name) {
+        Session session = Session.create(name);
+
+        return redirect(routes.Application.viewTranscript(session.getId()));
     }
 
     public static Result editTranscript(Long id) {

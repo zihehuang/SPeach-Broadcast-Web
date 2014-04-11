@@ -5,6 +5,9 @@
 # Home page
 GET     /                           controllers.Application.index()
 
+# URL for a new session
+GET     /newsession/:name                     controllers.Application.newSession(name: String)
+
 # Page for volunteer to make edits.
 GET     /volunteer/:id                  controllers.Application.editTranscript(id: Long)
 
@@ -21,6 +24,7 @@ POST    /api/add/:id                    controllers.Application.addUtterance(id:
 POST    /api/modify/:id                 controllers.Application.modifyOption(id: Long)
 POST    /api/upvote/:id                 controllers.Application.upvoteOption(id: Long)
 POST    /api/requesthelp/:id            controllers.Application.requestHelp(id: Long)
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
