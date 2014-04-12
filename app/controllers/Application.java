@@ -48,7 +48,7 @@ public class Application extends Controller {
         }
 
         int indexToHelpWith = Integer.parseInt(textBody);
-        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+        SharedTranscript ourText = SharedTranscript.find.byId(id);
 
         ourText.requestHelp(indexToHelpWith);
 
@@ -73,7 +73,7 @@ public class Application extends Controller {
         // write out to a file. the filename should be unique to each session
         RawUtterance.WriteToFile("Utterances");
 
-        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+        SharedTranscript ourText = SharedTranscript.find.byId(id);
 
 //        // set the confidence levels
 //        if (confidence > .9) {
@@ -97,7 +97,7 @@ public class Application extends Controller {
 
     public static Result getUtterances(Long id) {
         response().setContentType("text/event-stream");
-        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+        SharedTranscript ourText = SharedTranscript.find.byId(id);
 
         return ok(new EventSource() {
             @Override
@@ -122,7 +122,7 @@ public class Application extends Controller {
         if (null == textBody) {
             textBody = "";
         }
-        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+        SharedTranscript ourText = SharedTranscript.find.byId(id);
 
         ourText.modifySharedTranscript(textBody);
 

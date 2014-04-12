@@ -1,10 +1,12 @@
+// var sessionId is passed in from the view.
+
 var sharedTextApp = angular.module('sharedTextApp', ["monospaced.elastic"]);
 
 sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http, $location, $anchorScroll) {
     $scope.utterances = [];
 
     // Event Listeners
-    var source = new EventSource('api/transcript');
+    var source = new EventSource('api/transcript/'+sessionId);
 
     // Update from Server's event
     source.addEventListener('message', function(e) {
@@ -24,7 +26,7 @@ sharedTextApp.controller('SharedTxtViewCtrl', function($scope, $http, $location,
             headers: {
                 'Content-Type': 'text/plain',
             },
-            url: 'api/requesthelp',
+            url: 'api/requesthelp/'+sessionId,
             data: index
         });
     };
@@ -67,7 +69,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $timeout, db) 
     var isLoading = true;
     
     // Event Listeners
-    var source = new EventSource('api/stream');
+    var source = new EventSource('api/stream/'+sessionId);
 
     // Update from Server's event
     source.addEventListener('message', function(e) {
@@ -120,7 +122,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $timeout, db) 
             headers: {
                 'Content-Type': 'text/plain',
             },
-            url: 'api/add',
+            url: 'api/add/'+sessionId,
             data: $scope.inputText
         });
 
@@ -134,7 +136,7 @@ sharedTextApp.controller('SharedTxtCtrl', function($scope, $http, $timeout, db) 
             headers: {
                 'Content-Type': 'text/plain',
             },
-            url: 'api/modify',
+            url: 'api/modify/'+sessionId,
             data: text
         });
     };
