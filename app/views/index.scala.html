@@ -1,14 +1,22 @@
-@(nameForm: Form[_])
+@(nameForm: Form[_], idForm: Form[_])
 
 @main("Live Editing - SPeach", 0) {
-    <div class="text-center">
+    <div class="text-center index">
         <h1>Welcome to SPeach</h1>
         <img id="logo" src="@routes.Assets.at("images/logo.png")" alt="SPeach Logo">
 
         @helper.form(action = routes.Application.newSession) {
             @helper.inputText(nameForm("name"), '_showConstraints -> false)
 
-            <input type="submit" value="Start a New Session!" class="btn btn-primary btn-lg">
+            <input type="submit" value="Start a New Session" class="btn btn-primary btn-lg">
+        }
+
+        <br>
+
+        @helper.form(action = routes.Application.joinSession) {
+            @helper.inputText(idForm("sessionId"), '_showConstraints -> false)
+
+            <input type="submit" value="Join a Session" class="btn btn-primary btn-lg">
         }
 
     </div>

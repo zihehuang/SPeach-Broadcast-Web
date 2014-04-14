@@ -50,3 +50,7 @@ h1 {text-align:center}
 a:hover {
     text-decoration: none;
 }
+
+.index {
+    padding-bottom: 200px;
+}

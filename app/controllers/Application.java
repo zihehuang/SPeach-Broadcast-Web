@@ -1,30 +1,46 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
-import models.forms.SessionForm;
+import models.forms.CreateSessionForm;
+import models.forms.JoinSessionForm;
 import play.data.Form;
 import play.mvc.*;
-import playextension.EditorEventSource;
 import playextension.EventSource;
-import playextension.ViewerEventSource;
 
 import static play.data.Form.form;
 
 public class Application extends Controller {
 
     public static Result index() {
-        return ok(views.html.index.render(Form.form(SessionForm.class)));
+        return ok(views.html.index.render(Form.form(CreateSessionForm.class), Form.form(JoinSessionForm.class)))    ;
     }
 
     public static Result newSession() {
-        final Form<SessionForm> filledForm = form(SessionForm.class).bindFromRequest();
+        final Form<CreateSessionForm> filledForm = form(CreateSessionForm.class).bindFromRequest();
 
         if (filledForm.hasErrors()) {
-            return badRequest(views.html.index.render(filledForm));
+            return badRequest(views.html.index.render(filledForm, Form.form(JoinSessionForm.class)));
         } else {
-            Session session = Session.create(filledForm.name());
+            Session session = Session.create(filledForm.get().getName());
             return redirect(routes.Application.viewTranscript(session.getId()));
+        }
+    }
+
+    public static Result joinSession() {
+        final Form<JoinSessionForm> filledForm = form(JoinSessionForm.class).bindFromRequest();
+
+        if (filledForm.hasErrors()) {
+            return badRequest(views.html.index.render(Form.form(CreateSessionForm.class), filledForm));
+        } else {
+            long sessionId = filledForm.get().getSessionId();
+            Session session = Session.find.byId(sessionId);
+
+            if (session == null) {
+                return badRequest(views.html.index.render(Form.form(CreateSessionForm.class), filledForm));
+            }
+            else {
+                return redirect(routes.Application.viewTranscript(sessionId));
+            }
         }
     }
 
