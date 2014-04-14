@@ -54,3 +54,8 @@ a:hover {
 .index {
     padding-bottom: 200px;
 }
+
+.session-id:hover {
+    color: #999 !important;
+    cursor: default;
+}
