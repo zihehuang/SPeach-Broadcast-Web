@@ -186,7 +186,7 @@ public class SharedTranscript extends Model {
 //        utteranceToChange.changeText(optionId, newValue);
         this.transcript = newSharedTranscript;
         this.save();
-        this.WriteToFile("final_transcript");
+//        this.WriteToFile("final_transcript");
 
         ViewerUpdateMessenger.singleton.tell(new UpdateRequest(sessionId), null);
     }
