@@ -9,6 +9,7 @@ import play.libs.F.Callback0;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import playextension.EditorEventSource;
 import playextension.EventSource;
@@ -25,9 +26,9 @@ public class UpdateMessenger extends UntypedActor {
     public static ActorRef singleton = Akka.system().actorOf(Props.create(UpdateMessenger.class));
 
     /**
-     * List of editor connections.
+     * Maps a session id to a list of corresponding Event Sources.
      */
-    private List<EventSource> editorSockets = new ArrayList<EventSource>();
+    private ConcurrentHashMap<Long, List<EventSource>> sessionIdToESListMap = new ConcurrentHashMap<Long, List<EventSource>>();
 
     /**
      * The actions the messenger takes when it receives an update.
@@ -36,8 +37,20 @@ public class UpdateMessenger extends UntypedActor {
      */
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof EventSource) {
-            final EventSource eventSource = (EventSource) message;
+        if (message instanceof EventSourceRegisterRequest) {
+            EventSourceRegisterRequest request = (EventSourceRegisterRequest) message;
+            final EventSource eventSource = request.getRequestSource();
+            long sessionId = request.getSessionId();
+
+
+            List<EventSource> editorSockets = null;
+            if (sessionIdToESListMap.containsKey(sessionId)) {
+                editorSockets = sessionIdToESListMap.get(sessionId);
+            }
+            else {
+                editorSockets = new ArrayList<EventSource>();
+            }
+
 
             // if there is a connection.
             if (editorSockets.contains(eventSource)) {
@@ -53,18 +66,24 @@ public class UpdateMessenger extends UntypedActor {
                     }
                 });
                 editorSockets.add(eventSource);
+                sessionIdToESListMap.put(sessionId, editorSockets);
 
-                SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+                SharedTranscript ourText = SharedTranscript.find.byId(sessionId);
                 eventSource.sendData(ourText.toSSEForm().replace("\n", "\t"));
 
                 Logger.info("New browser connected (" + editorSockets.size() + " browsers currently connected)");
             }
         }
         // if the actor needs to send out an update to connected clients, do so.
-        if ("UPDATE".equals(message)) {
+        if (message instanceof UpdateRequest) {
+            UpdateRequest request = (UpdateRequest) message;
+            long sessionId = request.getSessionId();
+
+            List<EventSource> editorSockets = sessionIdToESListMap.get(sessionId);
+
             List<EventSource> shallowCopy = new ArrayList<EventSource>(editorSockets); //prevent ConcurrentModificationException
 
-            SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+            SharedTranscript ourText = SharedTranscript.find.byId(sessionId);
             String textToAdd = ourText.getTextToAdd();
 
             int indexToHelp = ourText.getIndexToHelp();
@@ -79,7 +98,7 @@ public class UpdateMessenger extends UntypedActor {
 
             ourText.clearTextToAdd();
 
-            ViewerUpdateMessenger.singleton.tell("UPDATE", getSender());
+            ViewerUpdateMessenger.singleton.tell(new UpdateRequest(sessionId), getSender());
         }
     }
 }

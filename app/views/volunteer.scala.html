@@ -1,6 +1,9 @@
 @(sessionId: Long)
 
 @main("Edit Transcript - SPeach", sessionId) {
+    <script type="text/javascript">
+        var sessionId = @sessionId;
+    </script>
 
 <!-- Main text output area -->
 <div ng-controller="SharedTxtCtrl">

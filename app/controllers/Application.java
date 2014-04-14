@@ -50,7 +50,7 @@ public class Application extends Controller {
         int indexToHelpWith = Integer.parseInt(textBody);
         SharedTranscript ourText = SharedTranscript.find.byId(id);
 
-        ourText.requestHelp(indexToHelpWith);
+        ourText.requestHelp(indexToHelpWith, id);
 
         return ok();
     }
@@ -90,7 +90,7 @@ public class Application extends Controller {
             toAdd = "\t";
         }
 
-        ourText.addToSharedTranscript(toAdd+text);
+        ourText.addToSharedTranscript(toAdd+text, id);
 
         return ok();
     }
@@ -102,7 +102,7 @@ public class Application extends Controller {
         return ok(new EventSource() {
             @Override
             public void onConnected() {
-                UpdateMessenger.singleton.tell(this, null);
+                UpdateMessenger.singleton.tell(new EventSourceRegisterRequest(this, id), null);
             }
         });
     }
@@ -111,7 +111,7 @@ public class Application extends Controller {
         return ok(new EventSource() {
             @Override
             public void onConnected() {
-                ViewerUpdateMessenger.singleton.tell(this, null);
+                ViewerUpdateMessenger.singleton.tell(new EventSourceRegisterRequest(this, id), null);
             }
         });
     }
@@ -124,7 +124,7 @@ public class Application extends Controller {
         }
         SharedTranscript ourText = SharedTranscript.find.byId(id);
 
-        ourText.modifySharedTranscript(textBody);
+        ourText.modifySharedTranscript(textBody, id);
 
         return ok();
     }

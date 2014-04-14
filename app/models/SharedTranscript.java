@@ -141,13 +141,13 @@ public class SharedTranscript extends Model {
      * Adds new string to this SharedTranscript. Creates a new utterance in the database for this.
      * @param toAdd The text to add to the shared transcript.
      */
-    public void addToSharedTranscript(String toAdd) {
+    public void addToSharedTranscript(String toAdd, long sessionId) {
         String[] splitToAdd = toAdd.split("===");
 
         if (splitToAdd.length == 1) {
             this.toAdd += toAdd;
             this.save();
-            UpdateMessenger.singleton.tell("UPDATE", null);
+            UpdateMessenger.singleton.tell(new UpdateRequest(sessionId), null);
         }
 
     }
@@ -156,7 +156,7 @@ public class SharedTranscript extends Model {
      * Adds stars to utterances where the viewer needs help.
      * @param indexToHelpWith The index that the viewer needs help with.
      */
-    public void requestHelp(int indexToHelpWith) {
+    public void requestHelp(int indexToHelpWith, long sessionId) {
         String[] lines = getTranscript().split("\n");
         lines[indexToHelpWith] = "**" + lines[indexToHelpWith];
         this.indexToHelp = indexToHelpWith;
@@ -174,21 +174,21 @@ public class SharedTranscript extends Model {
 
         this.save();
 
-        UpdateMessenger.singleton.tell("UPDATE", null);
+        UpdateMessenger.singleton.tell(new UpdateRequest(sessionId), null);
     }
 
     /**
      * Changes the value of the shared transcript at an index.
      * @param newSharedTranscript the new value for the shared transcript.
      */
-    public void modifySharedTranscript(String newSharedTranscript) {
+    public void modifySharedTranscript(String newSharedTranscript, long sessionId) {
 //        Utterance utteranceToChange = Utterance.find.byId((long) utteranceId);
 //        utteranceToChange.changeText(optionId, newValue);
         this.transcript = newSharedTranscript;
         this.save();
         this.WriteToFile("final_transcript");
 
-        ViewerUpdateMessenger.singleton.tell("UPDATE", null);
+        ViewerUpdateMessenger.singleton.tell(new UpdateRequest(sessionId), null);
     }
 
     /**
