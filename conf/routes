@@ -10,21 +10,21 @@ POST     /newsession                     controllers.Application.newSession()
 POST     /joinsession                    controllers.Application.joinSession()
 
 # Page for volunteer to make edits.
-GET     /volunteer/:id                  controllers.Application.editTranscript(id: Long)
+GET     /volunteer/:id                  controllers.Application.editTranscript(id: String)
 
 # Page for speaker
-GET     /speaker/:id                      controllers.Application.speaker(id: Long)
+GET     /speaker/:id                      controllers.Application.speaker(id: String)
 
 # Read-only view page
-GET     /view/:id                       controllers.Application.viewTranscript(id: Long)
+GET     /view/:id                       controllers.Application.viewTranscript(id: String)
 
 # API routes
-GET     /api/stream/:id                 controllers.Application.getUtterances(id: Long)
-GET     /api/transcript/:id             controllers.Application.getTranscriptData(id: Long)
-POST    /api/add/:id                    controllers.Application.addUtterance(id: Long)
-POST    /api/modify/:id                 controllers.Application.modifyOption(id: Long)
-POST    /api/upvote/:id                 controllers.Application.upvoteOption(id: Long)
-POST    /api/requesthelp/:id            controllers.Application.requestHelp(id: Long)
+GET     /api/stream/:id                 controllers.Application.getUtterances(id: String)
+GET     /api/transcript/:id             controllers.Application.getTranscriptData(id: String)
+POST    /api/add/:id                    controllers.Application.addUtterance(id: String)
+POST    /api/modify/:id                 controllers.Application.modifyOption(id: String)
+POST    /api/upvote/:id                 controllers.Application.upvoteOption(id: String)
+POST    /api/requesthelp/:id            controllers.Application.requestHelp(id: String)
 
 
 # Map static resources from the /public folder to the /assets URL path

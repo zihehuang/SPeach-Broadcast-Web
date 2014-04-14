@@ -9,7 +9,7 @@ public class EventSourceRegisterRequest {
 
     private EventSource requestSource;
 
-    public long getSessionId() {
+    public String getSessionId() {
         return sessionId;
     }
 
@@ -17,9 +17,9 @@ public class EventSourceRegisterRequest {
         return requestSource;
     }
 
-    private long sessionId;
+    private String sessionId;
 
-    public EventSourceRegisterRequest(EventSource eventSource, long sessionId) {
+    public EventSourceRegisterRequest(EventSource eventSource, String sessionId) {
         this.requestSource = eventSource;
         this.sessionId = sessionId;
     }

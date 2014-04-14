@@ -12,7 +12,7 @@ import static play.data.Form.form;
 public class Application extends Controller {
 
     public static Result index() {
-        return ok(views.html.index.render(Form.form(CreateSessionForm.class), Form.form(JoinSessionForm.class)))    ;
+        return ok(views.html.index.render(Form.form(CreateSessionForm.class), Form.form(JoinSessionForm.class)));
     }
 
     public static Result newSession() {
@@ -32,8 +32,8 @@ public class Application extends Controller {
         if (filledForm.hasErrors()) {
             return badRequest(views.html.index.render(Form.form(CreateSessionForm.class), filledForm));
         } else {
-            long sessionId = filledForm.get().getSessionId();
-            Session session = Session.find.byId(sessionId);
+            String sessionId = filledForm.get().getSessionId();
+            Session session = Session.findById(sessionId);
 
             if (session == null) {
                 return badRequest(views.html.index.render(Form.form(CreateSessionForm.class), filledForm));
@@ -44,15 +44,21 @@ public class Application extends Controller {
         }
     }
 
-    public static Result editTranscript(Long id) {
+    public static Result editTranscript(String id) {
+        if (Session.findById(id) == null) {
+            return redirect(routes.Application.index());
+        }
         return ok(views.html.volunteer.render(id));
     }
 
-    public static Result viewTranscript(Long id) {
+    public static Result viewTranscript(String id) {
+        if (Session.findById(id) == null) {
+            return redirect(routes.Application.index());
+        }
         return ok(views.html.viewTranscript.render(id));
     }
 
-    public static Result requestHelp(Long id) {
+    public static Result requestHelp(String id) {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
@@ -64,14 +70,14 @@ public class Application extends Controller {
         }
 
         int indexToHelpWith = Integer.parseInt(textBody);
-        SharedTranscript ourText = SharedTranscript.find.byId(id);
+        SharedTranscript ourText = SharedTranscript.findBySessionId(id);
 
         ourText.requestHelp(indexToHelpWith, id);
 
         return ok();
     }
 
-    public static Result addUtterance(Long id) {
+    public static Result addUtterance(String id) {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
@@ -89,7 +95,7 @@ public class Application extends Controller {
 //        // write out to a file. the filename should be unique to each session
 //        RawUtterance.WriteToFile("Utterances");
 
-        SharedTranscript ourText = SharedTranscript.find.byId(id);
+        SharedTranscript ourText = SharedTranscript.findBySessionId(id);
 
 //        // set the confidence levels
 //        if (confidence > .9) {
@@ -111,9 +117,9 @@ public class Application extends Controller {
         return ok();
     }
 
-    public static Result getUtterances(Long id) {
+    public static Result getUtterances(String id) {
         response().setContentType("text/event-stream");
-        SharedTranscript ourText = SharedTranscript.find.byId(id);
+        SharedTranscript ourText = SharedTranscript.findBySessionId(id);
 
         return ok(new EventSource() {
             @Override
@@ -123,7 +129,7 @@ public class Application extends Controller {
         });
     }
 
-    public static Result getTranscriptData(Long id) {
+    public static Result getTranscriptData(String id) {
         return ok(new EventSource() {
             @Override
             public void onConnected() {
@@ -132,24 +138,24 @@ public class Application extends Controller {
         });
     }
 
-    public static Result modifyOption(Long id) {
+    public static Result modifyOption(String id) {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
             textBody = "";
         }
-        SharedTranscript ourText = SharedTranscript.find.byId(id);
+        SharedTranscript ourText = SharedTranscript.findBySessionId(id);
 
         ourText.modifySharedTranscript(textBody, id);
 
         return ok();
     }
 
-    public static Result upvoteOption(Long id) {
+    public static Result upvoteOption(String id) {
         return ok();
     }
 
-    public static Result speaker(Long id) {
+    public static Result speaker(String id) {
         return ok(views.html.speaker.render());
     }
 

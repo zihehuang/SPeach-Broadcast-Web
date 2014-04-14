@@ -25,7 +25,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
     /**
      * Maps a session id to a list of corresponding Event Sources.
      */
-    private ConcurrentHashMap<Long, List<EventSource>> sessionIdToESListMap = new ConcurrentHashMap<Long, List<EventSource>>();
+    private ConcurrentHashMap<String, List<EventSource>> sessionIdToESListMap = new ConcurrentHashMap<String, List<EventSource>>();
 
     /**
      * The actions the messenger takes when it receives an update.
@@ -37,7 +37,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
         if (message instanceof EventSourceRegisterRequest) {
             EventSourceRegisterRequest request = (EventSourceRegisterRequest) message;
             final EventSource eventSource = request.getRequestSource();
-            long sessionId = request.getSessionId();
+            String sessionId = request.getSessionId();
 
             List<EventSource> viewerSockets = null;
             if (sessionIdToESListMap.containsKey(sessionId)) {
@@ -63,7 +63,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
                 viewerSockets.add(eventSource);
                 sessionIdToESListMap.put(sessionId, viewerSockets);
 
-                SharedTranscript ourText = SharedTranscript.find.byId(sessionId);
+                SharedTranscript ourText = SharedTranscript.findBySessionId(sessionId);
                 eventSource.sendData(ourText.getViewerText());
 
                 Logger.info("New browser connected (" + viewerSockets.size() + " viewers currently connected)");
@@ -72,7 +72,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
         // if the actor needs to send out an update to connected clients, do so.
         if (message instanceof UpdateRequest) {
             UpdateRequest request = (UpdateRequest) message;
-            long sessionId = request.getSessionId();
+            String sessionId = request.getSessionId();
 
             // if there are viewers, then udpate them.
             if (sessionIdToESListMap.containsKey(sessionId)) {
@@ -80,7 +80,7 @@ public class ViewerUpdateMessenger extends UntypedActor {
 
                 ArrayList<EventSource> shallowCopy = new ArrayList<EventSource>(viewerSockets);
                 for (EventSource es : shallowCopy) {
-                    SharedTranscript ourText = SharedTranscript.find.byId(sessionId);
+                    SharedTranscript ourText = SharedTranscript.findBySessionId(sessionId);
                     es.sendData(ourText.getViewerText());
                 }
             }

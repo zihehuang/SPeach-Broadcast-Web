@@ -5,13 +5,13 @@ package models;
  */
 public class UpdateRequest {
 
-    private long sessionId;
+    private String sessionId;
 
-    public long getSessionId() {
+    public String getSessionId() {
         return sessionId;
     }
 
-    public UpdateRequest(long sessionId) {
+    public UpdateRequest(String sessionId) {
         this.sessionId = sessionId;
     }
 

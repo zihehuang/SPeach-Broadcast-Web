@@ -20,6 +20,7 @@ create table raw_utterance (
 
 create table session (
   id                        bigint not null,
+  session_hash              varchar(255),
   name                      varchar(255),
   transcript_id             bigint,
   constraint pk_session primary key (id))
