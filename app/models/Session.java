@@ -56,7 +56,7 @@ public class Session extends Model {
 
     public static Session findById(String sessionId) {
         for (Session session : Session.find.all()) {
-            if (session.getId().substring(34).equals(sessionId)) {
+            if (session.getId().equals(sessionId)) {
                 return session;
             }
         }
