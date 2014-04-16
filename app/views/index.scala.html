@@ -1,8 +1,60 @@
-@()
+@(nameForm: Form[_], idForm: Form[_])
 
-@main("Live Editing - SPeach") {
+@main("Live Editing - SPeach", "") {
+    <style>
+    body, html { 
+        overflow:hidden;
+    }
+    </style>
 
-<h1>Welcome to SPeach</h1>
-<img id="logo" src="@routes.Assets.at("images/logo.png")" alt="SPeach Logo">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">SPeach</a>
+            </div>
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                    @helper.form(action = routes.Application.newSession) {
+                        @helper.input(nameForm("name"), '_showConstraints -> false, '_label -> "") { (id, name, value, args) =>
+                            <input type="text" name="@name" id="@id" placeholder="session name" @toHtmlArgs(args)>
+                        } 
+                        <input type="submit" value="Start a New Session" class="btn btn-primary btn-lg">
+                    }
+                    </li>
+                    <li>
+                    @helper.form(action = routes.Application.joinSession) {
+                        @helper.input(nameForm("sessionId"), '_showConstraints -> false, '_label -> "") { (id, name, value, args) =>
+                            <input type="text" name="@name" id="@id" placeholder="session ID" @toHtmlArgs(args)>
+                        } 
+                        <input type="submit" value="Join a Session" class="btn btn-primary btn-lg">
+                    }
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/instructions">How To Use</a>
+                    </li>
+                    <li>
+                        <form method="get" action="/download">
+                        <button type="submit" id="dlbutton" class="btn btn-primary btn-lg">Download App</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <div class="text-center index">
+        <h1>Welcome to SPeach</h1>
+        <img id="logo" src="@routes.Assets.at("images/logo.png")" alt="SPeach Logo">
+    </div>
 
 }

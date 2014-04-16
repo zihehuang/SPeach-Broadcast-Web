@@ -10,6 +10,7 @@ import playextension.EventSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Actor that relays updates to transcript viewers.
@@ -22,9 +23,9 @@ public class ViewerUpdateMessenger extends UntypedActor {
     public static ActorRef singleton = Akka.system().actorOf(Props.create(ViewerUpdateMessenger.class));
 
     /**
-     * List of editor connections.
+     * Maps a session id to a list of corresponding Event Sources.
      */
-    private List<EventSource> viewerSockets = new ArrayList<EventSource>();
+    private ConcurrentHashMap<String, List<EventSource>> sessionIdToESListMap = new ConcurrentHashMap<String, List<EventSource>>();
 
     /**
      * The actions the messenger takes when it receives an update.
@@ -33,8 +34,18 @@ public class ViewerUpdateMessenger extends UntypedActor {
      */
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof EventSource) {
-            final EventSource eventSource = (EventSource) message;
+        if (message instanceof EventSourceRegisterRequest) {
+            EventSourceRegisterRequest request = (EventSourceRegisterRequest) message;
+            final EventSource eventSource = request.getRequestSource();
+            String sessionId = request.getSessionId();
+
+            List<EventSource> viewerSockets = null;
+            if (sessionIdToESListMap.containsKey(sessionId)) {
+                viewerSockets = sessionIdToESListMap.get(sessionId);
+            }
+            else {
+                viewerSockets = new ArrayList<EventSource>();
+            }
 
             // if there is a connection.
             if (viewerSockets.contains(eventSource)) {
@@ -50,20 +61,30 @@ public class ViewerUpdateMessenger extends UntypedActor {
                     }
                 });
                 viewerSockets.add(eventSource);
+                sessionIdToESListMap.put(sessionId, viewerSockets);
 
-                SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+                SharedTranscript ourText = SharedTranscript.findBySessionId(sessionId);
                 eventSource.sendData(ourText.getViewerText());
 
                 Logger.info("New browser connected (" + viewerSockets.size() + " viewers currently connected)");
             }
         }
         // if the actor needs to send out an update to connected clients, do so.
-        if ("UPDATE".equals(message)) {
-            ArrayList<EventSource> shallowCopy = new ArrayList<EventSource>(viewerSockets);
-            for (EventSource es : shallowCopy) {
-                SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
-                es.sendData(ourText.getViewerText());
+        if (message instanceof UpdateRequest) {
+            UpdateRequest request = (UpdateRequest) message;
+            String sessionId = request.getSessionId();
+
+            // if there are viewers, then udpate them.
+            if (sessionIdToESListMap.containsKey(sessionId)) {
+                List<EventSource> viewerSockets = sessionIdToESListMap.get(sessionId);
+
+                ArrayList<EventSource> shallowCopy = new ArrayList<EventSource>(viewerSockets);
+                for (EventSource es : shallowCopy) {
+                    SharedTranscript ourText = SharedTranscript.findBySessionId(sessionId);
+                    es.sendData(ourText.getViewerText());
+                }
             }
+
         }
     }
 

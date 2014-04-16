@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, sessionId: String)(content: Html)
 
 <!DOCTYPE html>
 
@@ -20,6 +20,7 @@
 
     </head>
     <body>
+    @if(title != "Live Editing - SPeach") {
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -32,19 +33,26 @@
                     <a class="navbar-brand" href="/">SPeach</a>
                 </div>
 
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse navbar-ex1-collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a href="/volunteer">Volunteer</a>
-                        </li>
-                        <li><a href="/view">Viewer</a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- /.navbar-collapse -->
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/editor/@sessionId">Editor</a>
+                            </li>
+                            <li><a href="/view/@sessionId">Viewer</a>
+                            </li>
+                            <li><a href="" class="session-id">Session ID: @sessionId</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="/instructions">How To Use</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- /.navbar-collapse -->
+                
+
             </div>
             <!-- /.container -->
         </nav>
+    }
 
         <div class="container">
         @content

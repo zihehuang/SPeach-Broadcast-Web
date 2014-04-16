@@ -1,12 +1,15 @@
-@()
+@(sessionId: String)
 
-@main("View Transcript - SPeach") {
+@main("View Transcript - SPeach", sessionId) {
+    <script type="text/javascript">
+        var sessionId = "@sessionId";
+    </script>
 
 <!-- Main text output area -->
 <div ng-controller="SharedTxtViewCtrl">
 	<div id="viewer_box">
    		<!--<textarea msd-elastic id="viewer_textarea" disabled="disabled" ng-model="transcript"></textarea>-->
-        <a href="" class="viewer-text" ng-click="requestHelp($index)" ng-repeat="utterance in utterances">{{utterance}}</a>
+        <a href="" class="viewer-text" ng-click="requestHelp($index)" ng-repeat="utterance in utterances track by $index">{{utterance}}</a>
     </div>
     <div id="bottom">Autoscroll: <input type="checkbox" ng-model="autoscroll"></div>
 </div>

@@ -1,40 +1,96 @@
 h1 {text-align:center}
 
+form input[type="submit"] {
+	font-size: 14px;
+	float:right;
+	margin: 5px;
+	margin-top: 10px;
+	padding: 3px;
+}
+
+form input[id="name"] {
+	margin: 5px;
+	margin-top: 10px;
+}
+
+form input[id="sessionId"] {
+	margin: 5px;
+	margin-top: 10px;
+}
+
+dt {
+	height: 0px;
+}
+
+.error {
+	color: red;
+}
+
+#name_field {
+	margin-bottom: 0px;
+	float:left;
+}
+
+#sessionId_field {
+	margin-bottom: 0px;
+	float:left;
+}
+
+#dlbutton {
+	font-size: 14px;
+	float:right;
+	margin: 5px;
+	margin-top: 10px;
+	padding: 3px;
+}
+
 #logo {
+    width: 60%;
 	max-width: 100%;
 	display: block;
     margin-left: auto;
     margin-right: auto;
 }
 
-#volunteer_box
-{
-	position: relative;
-	height: 100%;
+#centering {
+	width: 60%;
+	max-width: 100%;
+	display: block;
+	margin-left: auto ;
+ 	margin-right: auto ;
+ 	padding-bottom: 80px;
+}
+
+.instructions {
 	width: 100%;
 }
 
-#volunteer_textarea
-{
+#volunteer_box {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	padding-bottom: 500px;
+}
+
+#volunteer_textarea {
 	border-left: none;
 	border-right: none;
 	outline: none;
 	padding-top:10px;
-	padding-bottom:10px;
+    padding-bottom:50px;
 	width: 100%;
 	min-height: 300px;
 	font-size: 14pt;
 }
 
-#viewer_box
-{
+#viewer_box {
 	position: relative;
 	height: 100%;
 	width: 100%;
+	padding-bottom: 500px;
 }
 
-#viewer_textarea
-{
+#viewer_textarea {
 	border: none;
 	padding-top:10px;
 	padding-bottom:10px;
@@ -45,8 +101,18 @@ h1 {text-align:center}
 
 .viewer-text {
     font-size: 15pt;
+    display: block;
 }
 
 a:hover {
     text-decoration: none;
+}
+
+.index {
+    padding-bottom: 200px;
+}
+
+.session-id:hover {
+    color: #999 !important;
+    cursor: default;
 }

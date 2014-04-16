@@ -1,5 +1,6 @@
 package controllers;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,26 +11,78 @@ import models.SharedTranscript;
 import models.UpdateMessenger;
 import models.ViewerUpdateMessenger;
 upstream/request-help
+=======
+import models.*;
+import models.forms.CreateSessionForm;
+import models.forms.JoinSessionForm;
+import play.data.Form;
+>>>>>>> upstream/master
 import play.mvc.*;
-import playextension.EditorEventSource;
 import playextension.EventSource;
-import playextension.ViewerEventSource;
+import java.io.File;
+
+import static play.data.Form.form;
 
 public class Application extends Controller {
 
     public static Result index() {
-        return ok(views.html.index.render());
+        return ok(views.html.index.render(Form.form(CreateSessionForm.class), Form.form(JoinSessionForm.class)));
     }
 
-    public static Result editTranscript() {
-        return ok(views.html.volunteer.render());
+    public static Result instructions() {
+        return ok(views.html.instructions.render(Form.form(CreateSessionForm.class), Form.form(JoinSessionForm.class)));
     }
 
-    public static Result viewTranscript() {
-        return ok(views.html.viewTranscript.render());
+    public static Result downloadApp() {
+        response().setContentType("application/x-download");
+        response().setHeader("Content-disposition","attachment; filename=SPeachAPP.md");
+        return ok(new File("public/android-app/SPeachAPP.md"));
     }
 
-    public static Result requestHelp() {
+    public static Result newSession() {
+        final Form<CreateSessionForm> filledForm = form(CreateSessionForm.class).bindFromRequest();
+
+        if (filledForm.hasErrors()) {
+            return badRequest(views.html.index.render(filledForm, Form.form(JoinSessionForm.class)));
+        } else {
+            Session session = Session.create(filledForm.get().getName());
+            return redirect(routes.Application.viewTranscript(session.getId()));
+        }
+    }
+
+    public static Result joinSession() {
+        final Form<JoinSessionForm> filledForm = form(JoinSessionForm.class).bindFromRequest();
+
+        if (filledForm.hasErrors()) {
+            return badRequest(views.html.index.render(Form.form(CreateSessionForm.class), filledForm));
+        } else {
+            String sessionId = filledForm.get().getSessionId();
+            Session session = Session.findById(sessionId);
+
+            if (session == null) {
+                return badRequest(views.html.index.render(Form.form(CreateSessionForm.class), filledForm));
+            }
+            else {
+                return redirect(routes.Application.viewTranscript(sessionId));
+            }
+        }
+    }
+
+    public static Result editTranscript(String id) {
+        if (Session.findById(id) == null) {
+            return redirect(routes.Application.index());
+        }
+        return ok(views.html.editor.render(id));
+    }
+
+    public static Result viewTranscript(String id) {
+        if (Session.findById(id) == null) {
+            return redirect(routes.Application.index());
+        }
+        return ok(views.html.viewTranscript.render(id));
+    }
+
+    public static Result requestHelp(String id) {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
@@ -41,14 +94,14 @@ public class Application extends Controller {
         }
 
         int indexToHelpWith = Integer.parseInt(textBody);
-        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+        SharedTranscript ourText = SharedTranscript.findBySessionId(id);
 
-        ourText.requestHelp(indexToHelpWith);
+        ourText.requestHelp(indexToHelpWith, id);
 
         return ok();
     }
 
-    public static Result addUtterance() {
+    public static Result addUtterance(String id) {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
@@ -63,17 +116,31 @@ public class Application extends Controller {
         // create the raw utterance in the database.
         RawUtterance.create(text, confidence);
 
-        // write out to a file. the filename should be unique to each session
-        RawUtterance.WriteToFile("Utterances");
+//        // write out to a file. the filename should be unique to each session
+//        RawUtterance.WriteToFile("Utterances");
 
-        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+        SharedTranscript ourText = SharedTranscript.findBySessionId(id);
 
+<<<<<<< HEAD
 
+=======
+//        // set the confidence levels
+//        if (confidence > .9) {
+//            ourText.addToSharedTranscript(text+"\t");
+//        }
+//        else if (confidence > .8) {
+//            ourText.addToSharedTranscript("*"+text+"\t");
+//        }
+//        else {
+//            ourText.addToSharedTranscript("**"+text+"\t");
+//        }
+>>>>>>> upstream/master
         String toAdd = "";
         if (!ourText.getTranscript().equals("")) {
             toAdd = "\t";
         }
 
+<<<<<<< HEAD
         // set the confidence levels
         if (confidence > .9) {
             ourText.addToSharedTranscript(toAdd+text);
@@ -84,50 +151,48 @@ public class Application extends Controller {
         else {
             ourText.addToSharedTranscript(toAdd+"**"+text);
         }
+=======
+        ourText.addToSharedTranscript(toAdd+text, id);
+>>>>>>> upstream/master
 
         return ok();
     }
 
-    public static Result getUtterances() {
+    public static Result getUtterances(final String id) {
         response().setContentType("text/event-stream");
-        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+        SharedTranscript ourText = SharedTranscript.findBySessionId(id);
 
         return ok(new EventSource() {
             @Override
             public void onConnected() {
-                UpdateMessenger.singleton.tell(this, null);
+                UpdateMessenger.singleton.tell(new EventSourceRegisterRequest(this, id), null);
             }
         });
     }
 
-    public static Result getTranscriptData() {
+    public static Result getTranscriptData(final String id) {
         return ok(new EventSource() {
             @Override
             public void onConnected() {
-                ViewerUpdateMessenger.singleton.tell(this, null);
+                ViewerUpdateMessenger.singleton.tell(new EventSourceRegisterRequest(this, id), null);
             }
         });
     }
 
-    public static Result modifyOption() {
-//        Http.RequestBody body = request().body();
-//        JsonNode jsonNode = body.asJson();
-//
-//        int utteranceIndex = jsonNode.get(0).asInt();
-//        int optionIndex = jsonNode.get(1).asInt();
-//        String newValue = jsonNode.get(2).asText();
+    public static Result modifyOption(String id) {
         Http.RequestBody body = request().body();
         String textBody = body.asText();
         if (null == textBody) {
             textBody = "";
         }
-        SharedTranscript ourText = SharedTranscript.getOnlySharedTranscript();
+        SharedTranscript ourText = SharedTranscript.findBySessionId(id);
 
-        ourText.modifySharedTranscript(textBody);
+        ourText.modifySharedTranscript(textBody, id);
 
         return ok();
     }
 
+<<<<<<< HEAD
     /**
      * create a vote ballot for an Option by requesting the client IP
      * Ensure there's one option vote per utterance per IP
@@ -182,10 +247,13 @@ public class Application extends Controller {
     		Vote.create(ip, optionToUpvote);
     		optionToUpvote.increment();
     		
+=======
+    public static Result upvoteOption(String id) {
+>>>>>>> upstream/master
         return ok();
     }
 
-    public static Result speaker() {
+    public static Result speaker(String id) {
         return ok(views.html.speaker.render());
     }
 

@@ -52,7 +52,7 @@ public class SharedTranscript extends Model {
      * @return
      */
     public String getTextToAdd() {
-        return toAdd;
+        return toAdd.replace("\n", "\t");
     }
 
     /**
@@ -108,31 +108,6 @@ public class SharedTranscript extends Model {
     }
 
     /**
-     * Gets the JSON form of this SharedTranscript for client consumption.
-     * @return The JSON form of this SharedTranscript.
-     */
-    public String toJSON() {
-//        List<Utterance> utteranceList = this.getTranscript();
-//
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("{");
-//
-//        // go through each utterance and add it as an entry.
-//        for (int i = 0; i < utteranceList.size(); i++) {
-//            sb.append(utteranceList.get(i).toString());
-//            // if it is not the last element, add a comma.
-//            if (i < utteranceList.size() - 1) {
-//                sb.append(",");
-//            }
-//        }
-//        sb.append("}");
-
-//        return sb.toString();
-
-        return getTranscript();
-    }
-
-    /**
      * Gets this SharedTranscript for client consumption.
      * @return Gets this SharedTranscript for client consumption.
      */
@@ -166,13 +141,13 @@ public class SharedTranscript extends Model {
      * Adds new string to this SharedTranscript. Creates a new utterance in the database for this.
      * @param toAdd The text to add to the shared transcript.
      */
-    public void addToSharedTranscript(String toAdd) {
+    public void addToSharedTranscript(String toAdd, String sessionId) {
         String[] splitToAdd = toAdd.split("===");
 
         if (splitToAdd.length == 1) {
             this.toAdd += toAdd;
             this.save();
-            UpdateMessenger.singleton.tell("UPDATE", null);
+            UpdateMessenger.singleton.tell(new UpdateRequest(sessionId), null);
         }
 
     }
@@ -181,7 +156,7 @@ public class SharedTranscript extends Model {
      * Adds stars to utterances where the viewer needs help.
      * @param indexToHelpWith The index that the viewer needs help with.
      */
-    public void requestHelp(int indexToHelpWith) {
+    public void requestHelp(int indexToHelpWith, String sessionId) {
         String[] lines = getTranscript().split("\n");
         lines[indexToHelpWith] = "**" + lines[indexToHelpWith];
         this.indexToHelp = indexToHelpWith;
@@ -199,21 +174,25 @@ public class SharedTranscript extends Model {
 
         this.save();
 
-        UpdateMessenger.singleton.tell("UPDATE", null);
+        UpdateMessenger.singleton.tell(new UpdateRequest(sessionId), null);
     }
 
     /**
      * Changes the value of the shared transcript at an index.
      * @param newSharedTranscript the new value for the shared transcript.
      */
-    public void modifySharedTranscript(String newSharedTranscript) {
+    public void modifySharedTranscript(String newSharedTranscript, String sessionId) {
 //        Utterance utteranceToChange = Utterance.find.byId((long) utteranceId);
 //        utteranceToChange.changeText(optionId, newValue);
         this.transcript = newSharedTranscript;
         this.save();
+<<<<<<< HEAD
         this.WriteToFile("final_transcript");
+=======
+//        this.WriteToFile("final_transcript");
+>>>>>>> upstream/master
 
-        ViewerUpdateMessenger.singleton.tell("UPDATE", null);
+        ViewerUpdateMessenger.singleton.tell(new UpdateRequest(sessionId), null);
     }
 
     /**
@@ -229,6 +208,22 @@ public class SharedTranscript extends Model {
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Static method that finds a shared transcript by a session id.
+     * @param sessionId The session id to lookup.
+     * @return The transcript corresponding to the sessionId.
+     */
+    public static SharedTranscript findBySessionId(String sessionId) {
+        Session session = Session.findById(sessionId);
+        if (session != null) {
+            return session.getTranscript();
+        }
+        return null;
+    }
+
+    /**
+>>>>>>> upstream/master
      * Static method that writes all the modification to a file.
      * @param filename The filename for the .csv file.
      */
