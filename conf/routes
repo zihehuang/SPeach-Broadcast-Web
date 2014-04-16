@@ -26,6 +26,9 @@ POST    /api/modify/:id                 controllers.Application.modifyOption(id:
 POST    /api/upvote/:id                 controllers.Application.upvoteOption(id: String)
 POST    /api/requesthelp/:id            controllers.Application.requestHelp(id: String)
 
+# Download page
+GET    /download                        controllers.Application.downloadApp()
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

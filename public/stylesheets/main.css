@@ -36,6 +36,14 @@ dt {
 	float:left;
 }
 
+#dlbutton {
+	font-size: 14px;
+	float:right;
+	margin: 5px;
+	margin-top: 10px;
+	padding: 3px;
+}
+
 #logo {
     width: 60%;
 	max-width: 100%;

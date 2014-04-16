@@ -6,6 +6,7 @@ import models.forms.JoinSessionForm;
 import play.data.Form;
 import play.mvc.*;
 import playextension.EventSource;
+import java.io.File;
 
 import static play.data.Form.form;
 
@@ -13,6 +14,12 @@ public class Application extends Controller {
 
     public static Result index() {
         return ok(views.html.index.render(Form.form(CreateSessionForm.class), Form.form(JoinSessionForm.class)));
+    }
+
+    public static Result downloadApp() {
+        response().setContentType("application/x-download");
+        response().setHeader("Content-disposition","attachment; filename=SPeachAPP.md");
+        return ok(new File("public/android-app/SPeachAPP.md"));
     }
 
     public static Result newSession() {
