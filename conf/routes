@@ -5,12 +5,15 @@
 # Home page
 GET     /                           controllers.Application.index()
 
+# Instructions page
+GET     /instructions                           controllers.Application.instructions()
+
 # URL for a new session
 POST     /newsession                     controllers.Application.newSession()
 POST     /joinsession                    controllers.Application.joinSession()
 
-# Page for volunteer to make edits.
-GET     /volunteer/:id                  controllers.Application.editTranscript(id: String)
+# Page for editor to make edits.
+GET     /editor/:id                  controllers.Application.editTranscript(id: String)
 
 # Page for speaker
 GET     /speaker/:id                      controllers.Application.speaker(id: String)

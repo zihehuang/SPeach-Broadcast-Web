@@ -16,6 +16,10 @@ public class Application extends Controller {
         return ok(views.html.index.render(Form.form(CreateSessionForm.class), Form.form(JoinSessionForm.class)));
     }
 
+    public static Result instructions() {
+        return ok(views.html.instructions.render(Form.form(CreateSessionForm.class), Form.form(JoinSessionForm.class)));
+    }
+
     public static Result downloadApp() {
         response().setContentType("application/x-download");
         response().setHeader("Content-disposition","attachment; filename=SPeachAPP.md");
@@ -55,7 +59,7 @@ public class Application extends Controller {
         if (Session.findById(id) == null) {
             return redirect(routes.Application.index());
         }
-        return ok(views.html.volunteer.render(id));
+        return ok(views.html.editor.render(id));
     }
 
     public static Result viewTranscript(String id) {
