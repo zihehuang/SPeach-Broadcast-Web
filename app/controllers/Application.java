@@ -111,7 +111,7 @@ public class Application extends Controller {
         return ok();
     }
 
-    public static Result getUtterances(Long id) {
+    public static Result getUtterances(final Long id) {
         response().setContentType("text/event-stream");
         SharedTranscript ourText = SharedTranscript.find.byId(id);
 
@@ -123,7 +123,7 @@ public class Application extends Controller {
         });
     }
 
-    public static Result getTranscriptData(Long id) {
+    public static Result getTranscriptData(final Long id) {
         return ok(new EventSource() {
             @Override
             public void onConnected() {

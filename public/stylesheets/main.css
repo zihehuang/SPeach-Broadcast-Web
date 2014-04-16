@@ -1,5 +1,37 @@
 h1 {text-align:center}
 
+form input[type="submit"] {
+	font-size: 14px;
+	float:right;
+	margin: 5px;
+	margin-top: 10px;
+	padding: 3px;
+}
+
+form input[id="name"] {
+	margin: 5px;
+	margin-top: 10px;
+}
+
+form input[id="sessionId"] {
+	margin: 5px;
+	margin-top: 10px;
+}
+
+dt {
+	height: 0px;
+}
+
+#name_field {
+	margin-bottom: 0px;
+	float:left;
+}
+
+#sessionId_field {
+	margin-bottom: 0px;
+	float:left;
+}
+
 #logo {
     width: 60%;
 	max-width: 100%;

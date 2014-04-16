@@ -20,6 +20,7 @@
 
     </head>
     <body>
+    @if(title != "Live Editing - SPeach") {
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -32,8 +33,6 @@
                     <a class="navbar-brand" href="/">SPeach</a>
                 </div>
 
-                <!--&lt;!&ndash; Collect the nav links, forms, and other content for toggling &ndash;&gt;-->
-                @if(title != "Live Editing - SPeach") {
                     <div class="collapse navbar-collapse navbar-ex1-collapse">
                         <ul class="nav navbar-nav">
                             <li><a href="/volunteer/@sessionId">Volunteer</a>
@@ -44,10 +43,12 @@
                         </ul>
                     </div>
                     <!-- /.navbar-collapse -->
-                }
+                
+
             </div>
             <!-- /.container -->
         </nav>
+    }
 
         <div class="container">
         @content
