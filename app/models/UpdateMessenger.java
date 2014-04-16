@@ -28,7 +28,7 @@ public class UpdateMessenger extends UntypedActor {
     /**
      * Maps a session id to a list of corresponding Event Sources.
      */
-    private ConcurrentHashMap<Long, List<EventSource>> sessionIdToESListMap = new ConcurrentHashMap<Long, List<EventSource>>();
+    private ConcurrentHashMap<String, List<EventSource>> sessionIdToESListMap = new ConcurrentHashMap<String, List<EventSource>>();
 
     /**
      * The actions the messenger takes when it receives an update.
@@ -40,7 +40,7 @@ public class UpdateMessenger extends UntypedActor {
         if (message instanceof EventSourceRegisterRequest) {
             EventSourceRegisterRequest request = (EventSourceRegisterRequest) message;
             final EventSource eventSource = request.getRequestSource();
-            long sessionId = request.getSessionId();
+            String sessionId = request.getSessionId();
 
 
             List<EventSource> editorSockets = null;
@@ -68,7 +68,7 @@ public class UpdateMessenger extends UntypedActor {
                 editorSockets.add(eventSource);
                 sessionIdToESListMap.put(sessionId, editorSockets);
 
-                SharedTranscript ourText = SharedTranscript.find.byId(sessionId);
+                SharedTranscript ourText = SharedTranscript.findBySessionId(sessionId);
                 eventSource.sendData(ourText.toSSEForm().replace("\n", "\t"));
 
                 Logger.info("New browser connected (" + editorSockets.size() + " browsers currently connected)");
@@ -77,13 +77,13 @@ public class UpdateMessenger extends UntypedActor {
         // if the actor needs to send out an update to connected clients, do so.
         if (message instanceof UpdateRequest) {
             UpdateRequest request = (UpdateRequest) message;
-            long sessionId = request.getSessionId();
+            String sessionId = request.getSessionId();
 
             List<EventSource> editorSockets = sessionIdToESListMap.get(sessionId);
 
             List<EventSource> shallowCopy = new ArrayList<EventSource>(editorSockets); //prevent ConcurrentModificationException
 
-            SharedTranscript ourText = SharedTranscript.find.byId(sessionId);
+            SharedTranscript ourText = SharedTranscript.findBySessionId(sessionId);
             String textToAdd = ourText.getTextToAdd();
 
             int indexToHelp = ourText.getIndexToHelp();

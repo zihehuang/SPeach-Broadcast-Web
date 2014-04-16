@@ -1,10 +1,13 @@
 package models;
 
 import play.db.ebean.Model;
+import tyrex.services.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * Represents a broadcasting session
@@ -22,15 +25,23 @@ public class Session extends Model {
      * Gets the session id.
      * @return The session id.
      */
-    public long getId() {
-        return id;
+    public String getId() {
+        return sessionHash;
     }
+
+    /**
+     * The hash of the session.
+     */
+    private String sessionHash;
 
     /**
      * The name of the session.
      */
-
     private String name;
+
+    public SharedTranscript getTranscript() {
+        return transcript;
+    }
 
     /**
      * The transcript that belongs to this session.
@@ -43,6 +54,15 @@ public class Session extends Model {
      */
     public static Finder<Long, Session> find = new Finder<Long, Session>(Long.class, Session.class);
 
+    public static Session findById(String sessionId) {
+        for (Session session : Session.find.all()) {
+            if (session.getId().substring(34).equals(sessionId)) {
+                return session;
+            }
+        }
+        return null;
+    }
+
     /**
      * Constructor for session.
      * @param name The name of the session.
@@ -51,6 +71,7 @@ public class Session extends Model {
     public Session(String name, SharedTranscript transcript) {
         this.name = name;
         this.transcript = transcript;
+        this.sessionHash = DigestUtils.shaHex(this.name + this.id).substring(34);
     }
 
     /**
